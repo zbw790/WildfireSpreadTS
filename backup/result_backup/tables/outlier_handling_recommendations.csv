@@ -1,0 +1,24 @@
+Channel_ID,Channel_Name,Outlier_Ratio,Handling_Method
+0,VIIRS_I4,0.0447,Standard methods acceptable
+1,VIIRS_I5,0.1120,Robust methods (clip or transform)
+2,VIIRS_M13,0.1291,Robust methods (clip or transform)
+3,NDVI,0.0017,Standard methods acceptable
+4,EVI2,0.0262,Standard methods acceptable
+5,Temperature,0.1802,Robust methods (clip or transform)
+6,Humidity,0.0243,Standard methods acceptable
+7,Wind_Direction,0.0000,Standard methods acceptable
+8,Wind_Speed,0.0632,Careful inspection and selective removal
+9,Precipitation,0.0103,Standard methods acceptable
+10,Surface_Pressure,0.0000,Standard methods acceptable
+11,Solar_Radiation,0.0000,Standard methods acceptable
+12,Elevation,0.0373,Standard methods acceptable
+13,Slope,0.0000,Standard methods acceptable
+14,Aspect,0.0000,Standard methods acceptable
+15,PDSI,0.0000,Standard methods acceptable
+16,Land_Cover,0.1104,Robust methods (clip or transform)
+17,Forecast_Temperature,0.1762,Robust methods (clip or transform)
+18,Forecast_Humidity,0.0597,Careful inspection and selective removal
+19,Forecast_Wind_Direction,0.0000,Standard methods acceptable
+20,Forecast_Wind_Speed,0.0068,Standard methods acceptable
+21,Forecast_Precipitation,0.0000,Standard methods acceptable
+22,Active_Fire_Confidence,0.0005,Standard methods acceptable

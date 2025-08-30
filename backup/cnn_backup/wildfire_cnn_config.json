@@ -1,0 +1,52 @@
+{
+  "data": {
+    "data_dir": "data/processed",
+    "train_years": [2018, 2019],
+    "val_years": [2020],
+    "test_years": [2021],
+    "batch_size": 6,
+    "num_workers": 2,
+    "sequence_length": 5,
+    "crop_size": 128,
+    "stride": 64,
+    "fire_threshold": 0.5,
+    "augment": true
+  },
+  "model": {
+    "type": "WildfireCNN",
+    "input_channels": 23,
+    "sequence_length": 5,
+    "unet_features": [64, 128, 256, 512],
+    "lstm_hidden_dims": [128, 64],
+    "num_classes": 1,
+    "dropout": 0.1,
+    "use_attention": true
+  },
+  "loss": {
+    "type": "auto",
+    "comment": "自动根据类别不平衡程度选择最佳损失函数"
+  },
+  "optimizer": {
+    "type": "AdamW",
+    "lr": 0.001,
+    "weight_decay": 0.01,
+    "betas": [0.9, 0.999]
+  },
+  "scheduler": {
+    "type": "ReduceLROnPlateau",
+    "factor": 0.5,
+    "patience": 5,
+    "min_lr": 1e-6
+  },
+  "training": {
+    "epochs": 50,
+    "early_stopping_patience": 10
+  },
+  "device": "cuda",
+  "seed": 42,
+  "output_dir": "outputs/wildfire_cnn_experiment",
+  "use_wandb": false,
+  "wandb_project": "wildfire-spread-prediction",
+  "experiment_name": "wildfire-cnn-baseline",
+  "description": "基线野火传播预测CNN模型，使用23通道多模态数据，U-Net+ConvLSTM架构，Focal Loss处理类别不平衡"
+} 

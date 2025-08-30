@@ -1,0 +1,5 @@
+rule,count,note
+Wind_Speed>70,0,unusually high
+Total_Precip<0,0,negative precip
+Max_Temp_K<230,0,too low (K)
+Spec_Hum<0,0,negative humidity

@@ -1,0 +1,62 @@
+{
+  "data": {
+    "data_dir": "data/processed",
+    "train_years": [
+      2018,
+      2019
+    ],
+    "val_years": [
+      2020
+    ],
+    "test_years": [
+      2021
+    ],
+    "batch_size": 2,
+    "num_workers": 4,
+    "sequence_length": 5,
+    "crop_size": 128,
+    "stride": 64,
+    "fire_threshold": 0.5,
+    "augment": true
+  },
+  "model": {
+    "type": "WildfireCNN",
+    "input_channels": 23,
+    "sequence_length": 5,
+    "unet_features": [
+      64,
+      128,
+      256,
+      512
+    ],
+    "lstm_hidden_dims": [
+      128,
+      64
+    ],
+    "num_classes": 1,
+    "dropout": 0.1,
+    "use_attention": true
+  },
+  "loss": {
+    "type": "auto"
+  },
+  "optimizer": {
+    "type": "AdamW",
+    "lr": 0.01,
+    "weight_decay": 0.01
+  },
+  "scheduler": {
+    "type": "ReduceLROnPlateau",
+    "factor": 0.5,
+    "patience": 5
+  },
+  "training": {
+    "epochs": 1,
+    "early_stopping_patience": 10
+  },
+  "device": "cuda",
+  "seed": 42,
+  "output_dir": "outputs/test_run",
+  "use_wandb": false,
+  "experiment_name": "wildfire-cnn-20250730-104708"
+}

@@ -1,0 +1,5 @@
+Year,Samples,Fire_Mean_Confidence,Fire_Positive_Ratio,Temperature_Mean,Humidity_Mean,Wind_Speed_Mean
+2018,442010,0.0038,0.0002,0.07,3.53,278.29
+2019,383070,0.0028,0.0002,1.98,3.43,286.95
+2020,227744,0.0010,0.0001,0.01,4.03,288.51
+2021,430926,0.0193,0.0013,0.75,3.55,282.57

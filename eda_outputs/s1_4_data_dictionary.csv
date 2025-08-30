@@ -1,0 +1,25 @@
+Variable Name,Original Dtype,Non-null Count,Unique Values,Missing %
+VIIRS_M11,float32,194395,6821,2.8025
+VIIRS_I2,float32,194321,10353,2.8395
+VIIRS_I1,float32,194321,10564,2.8395
+NDVI,float32,194471,9640,2.7645
+EVI2,float32,194471,6680,2.7645
+Total_Precip,float32,200000,476,0.0
+Wind_Speed,float32,200000,128,0.0
+Wind_Direction,float32,200000,361,0.0
+Min_Temp_K,float32,200000,441,0.0
+Max_Temp_K,float32,200000,506,0.0
+ERC,float32,200000,93,0.0
+Spec_Hum,float32,200000,647,0.0
+PDSI,float32,200000,154853,0.0
+Slope,float32,200000,150783,0.0
+Aspect,float32,200000,3765,0.0
+Elevation,float32,200000,815,0.0
+Landcover,float32,200000,15,0.0
+Forecast_Precip,float32,200000,900,0.0
+Forecast_Wind_Speed,float32,200000,5367,0.0
+Forecast_Wind_Dir,float32,200000,5367,0.0
+Forecast_Temp_C,float32,200000,5366,0.0
+Forecast_Spec_Hum,float32,200000,5362,0.0
+Active_Fire,float32,200000,7,0.0
+Year,int64,200000,2,0.0

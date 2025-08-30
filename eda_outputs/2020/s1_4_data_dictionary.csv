@@ -1,0 +1,24 @@
+Variable Name,Original Dtype,Non-null Count,Unique Values,Missing %,Analysis Type
+VIIRS_M11,float32,199104,7224,0.44799999999999995,Numerical-Continuous
+VIIRS_I2,float32,198968,10464,0.516,Numerical-Continuous
+VIIRS_I1,float32,198968,10634,0.516,Numerical-Continuous
+NDVI,float32,200000,9365,0.0,Numerical-Continuous
+EVI2,float32,200000,6309,0.0,Numerical-Continuous
+Total_Precip,float32,200000,214,0.0,Numerical-Continuous
+Wind_Speed,float32,200000,124,0.0,Numerical-Continuous
+Wind_Direction,float32,200000,361,0.0,Numerical-Cyclical
+Min_Temp_K,float32,200000,444,0.0,Numerical-Continuous (K)
+Max_Temp_K,float32,200000,507,0.0,Numerical-Continuous (K)
+ERC,float32,200000,93,0.0,Numerical-Continuous
+Spec_Hum,float32,200000,585,0.0,Numerical-Continuous
+PDSI,float32,200000,137085,0.0,Numerical-Continuous
+Slope,float32,200000,133023,0.0,Numerical-Continuous
+Aspect,float32,200000,3813,0.0,Numerical-Cyclical
+Elevation,float32,200000,506,0.0,Numerical-Continuous
+Landcover,float32,200000,15,0.0,Categorical-Nominal
+Forecast_Precip,float32,200000,474,0.0,Numerical-Continuous
+Forecast_Wind_Speed,float32,200000,3173,0.0,Numerical-Continuous
+Forecast_Wind_Dir,float32,200000,3173,0.0,Numerical-Special
+Forecast_Temp_C,float32,200000,3173,0.0,Numerical-Continuous (C)
+Forecast_Spec_Hum,float32,200000,3170,0.0,Numerical-Continuous
+Active_Fire,float32,200000,7,0.0,Categorical-Binary

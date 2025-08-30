@@ -1,0 +1,3 @@
+rule,count,note
+Wind_Speed>70,0,unusually high
+Total_Precip<0,0,negative precip

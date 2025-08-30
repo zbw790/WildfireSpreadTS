@@ -1,0 +1,7 @@
+Feature,Expected Relationship,Observed Correlation
+Wind_Speed,+,0.001
+Slope,+,0.006
+Max_Temp_K,+,-0.000
+Spec_Hum,-,0.001
+NDVI,-,0.005
+Total_Precip,-,0.001

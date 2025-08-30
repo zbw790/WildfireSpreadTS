@@ -1,0 +1,13 @@
+feature,unit,expected_sign,note
+Wind_Speed,m/s,+,Higher speed → faster spread
+Wind_Direction,deg,0,Use with speed; directionality
+Max_Temp_K,K,+,Hotter → easier ignition/spread
+Min_Temp_K,K,+,Proxy of hot/dry periods
+Spec_Hum,kg/kg,-,Moisture suppresses fire
+Total_Precip,mm,-,Rain suppresses
+PDSI,index,-,Wetter → less fire
+ERC,index,+,Fuel dryness → more fire
+NDVI,index,-,Greenness/moisture → less fire
+Slope,deg,+,Uphill promotes spread
+Aspect,deg,0,Aspect interacts with sun/wind
+Elevation,m,±,Microclimate effects

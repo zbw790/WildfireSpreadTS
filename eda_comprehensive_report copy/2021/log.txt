@@ -1,0 +1,13 @@
+[20:03:20] Processing Year: 2021 | Memory: 0.2GB
+[20:03:23] Warning: Metadata scanning failed for all files in 2021. Skipping analysis. | Memory: 0.2GB
+[20:15:09] Processing Year: 2021 | 10 files | Memory: 0.2GB
+[20:15:12] Warning: Metadata scanning failed for all files in 2021. Skipping analysis. | Memory: 0.2GB
+[20:18:40] Processing Year: 2021 | 10 files | Memory: 0.2GB
+[20:18:43] Warning: Metadata scanning failed for all files in 2021. Skipping analysis. | Memory: 0.2GB
+[20:23:15] Processing Year: 2021 | Memory: 0.3GB
+[20:23:25] Generating comprehensive report for (2021) | Memory: 0.3GB
+[20:23:25] Generating Literature Comparison Table... | Memory: 0.4GB
+[20:23:25] Generating Grouped Boxplots with T-Tests... | Memory: 0.4GB
+[20:23:25] Generating Feature Importance Ranking... | Memory: 0.4GB
+[20:23:35] Generating PCA Plot... | Memory: 0.4GB
+[20:23:37] Comprehensive report generated for (2021) | Memory: 0.4GB

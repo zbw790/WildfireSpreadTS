@@ -1,0 +1,28 @@
+Dataset shape: (172896238, 23)
+Memory usage: 14.9GB
+Processing time: 2025-08-24 18:53:51
+Missing values per column:
+VIIRS_M11              2995510
+VIIRS_I2               2994933
+VIIRS_I1               2994915
+NDVI                    663074
+EVI2                    663243
+Total_Precip             47976
+Wind_Speed               47976
+Wind_Direction           47976
+Min_Temp_K               47976
+Max_Temp_K               47976
+ERC                      47976
+Spec_Hum                 47976
+PDSI                    150396
+Slope                   150396
+Aspect                  143358
+Elevation               117848
+Landcover                    0
+Forecast_Precip              0
+Forecast_Wind_Speed          0
+Forecast_Wind_Dir            0
+Forecast_Temp_C              0
+Forecast_Spec_Hum            0
+Active_Fire                  0
+dtype: int64

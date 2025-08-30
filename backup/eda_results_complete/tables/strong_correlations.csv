@@ -1,0 +1,7 @@
+channel1,channel2,channel1_name,channel2_name,correlation
+8,9,Wind_Speed,Precipitation,0.732
+8,20,Wind_Speed,Forecast_Wind_Speed,0.7768
+8,21,Wind_Speed,Forecast_Precipitation,0.7297
+9,20,Precipitation,Forecast_Wind_Speed,0.7839
+11,21,Solar_Radiation,Forecast_Precipitation,0.8624
+14,21,Aspect,Forecast_Precipitation,-0.7365

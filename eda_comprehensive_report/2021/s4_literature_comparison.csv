@@ -1,0 +1,7 @@
+Feature,Expected,Observed_r
+Wind_Speed,+,-0.007
+Slope,+,-0.002
+Max_Temp_K,+,0.002
+Spec_Hum,-,-0.007
+NDVI,-,0.008
+Total_Precip,-,-0.004

@@ -1,0 +1,726 @@
+{
+  "analysis_metadata": {
+    "analysis_date": "2025-07-30T08:44:40.831160",
+    "dataset": "WildfireSpreadTS",
+    "analysis_type": "Professional EDA",
+    "random_state": 42,
+    "analyst": "AI Assistant"
+  },
+  "feature_schema": {
+    "total_features": 40,
+    "feature_categories": {
+      "Land Cover": "17",
+      "Meteorology": "13",
+      "Remote Sensing": "3",
+      "Topography": "3",
+      "Vegetation Index": "2",
+      "Fire Detection": "2"
+    },
+    "modeling_importance_distribution": {
+      "Medium": "20",
+      "High": "10",
+      "Critical": "10"
+    },
+    "detailed_schema": {
+      "0": {
+        "name": "VIIRS_M11",
+        "category": "Remote Sensing",
+        "subcategory": "Thermal Infrared",
+        "unit": "Brightness Temperature (K)",
+        "physical_meaning": "Surface temperature, fire detection",
+        "expected_range": [
+          200,
+          400
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Direct indicator of thermal anomalies"
+      },
+      "1": {
+        "name": "VIIRS_I2",
+        "category": "Remote Sensing",
+        "subcategory": "Near Infrared",
+        "unit": "Reflectance",
+        "physical_meaning": "Vegetation structure, water content",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Fuel moisture and vegetation stress"
+      },
+      "2": {
+        "name": "VIIRS_I1",
+        "category": "Remote Sensing",
+        "subcategory": "Red",
+        "unit": "Reflectance",
+        "physical_meaning": "Vegetation health, chlorophyll absorption",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Vegetation condition assessment"
+      },
+      "3": {
+        "name": "NDVI",
+        "category": "Vegetation Index",
+        "subcategory": "Spectral Index",
+        "unit": "Dimensionless",
+        "physical_meaning": "Vegetation greenness and biomass",
+        "expected_range": [
+          -1,
+          1
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Fuel load and vegetation health"
+      },
+      "4": {
+        "name": "EVI2",
+        "category": "Vegetation Index",
+        "subcategory": "Enhanced Spectral Index",
+        "unit": "Dimensionless",
+        "physical_meaning": "Enhanced vegetation index",
+        "expected_range": [
+          -1,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Improved vegetation assessment"
+      },
+      "5": {
+        "name": "Precipitation_Total",
+        "category": "Meteorology",
+        "subcategory": "Historical Precipitation",
+        "unit": "mm",
+        "physical_meaning": "Accumulated precipitation",
+        "expected_range": [
+          0,
+          100
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Fuel moisture content"
+      },
+      "6": {
+        "name": "Wind_Speed",
+        "category": "Meteorology",
+        "subcategory": "Historical Wind",
+        "unit": "m/s",
+        "physical_meaning": "Wind velocity magnitude",
+        "expected_range": [
+          0,
+          30
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Primary spread driver"
+      },
+      "7": {
+        "name": "Wind_Direction",
+        "category": "Meteorology",
+        "subcategory": "Historical Wind",
+        "unit": "degrees",
+        "physical_meaning": "Wind direction (meteorological)",
+        "expected_range": [
+          0,
+          360
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Spread direction determinant"
+      },
+      "8": {
+        "name": "Temperature_Min",
+        "category": "Meteorology",
+        "subcategory": "Historical Temperature",
+        "unit": "°C",
+        "physical_meaning": "Daily minimum temperature",
+        "expected_range": [
+          -40,
+          50
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel moisture and ignition"
+      },
+      "9": {
+        "name": "Temperature_Max",
+        "category": "Meteorology",
+        "subcategory": "Historical Temperature",
+        "unit": "°C",
+        "physical_meaning": "Daily maximum temperature",
+        "expected_range": [
+          -30,
+          60
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Fire intensity and spread rate"
+      },
+      "10": {
+        "name": "ERC",
+        "category": "Meteorology",
+        "subcategory": "Fire Weather Index",
+        "unit": "Index",
+        "physical_meaning": "Energy Release Component",
+        "expected_range": [
+          0,
+          200
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Fire intensity potential"
+      },
+      "11": {
+        "name": "Specific_Humidity",
+        "category": "Meteorology",
+        "subcategory": "Historical Humidity",
+        "unit": "kg/kg",
+        "physical_meaning": "Atmospheric moisture content",
+        "expected_range": [
+          0,
+          0.03
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Fuel moisture and ignition probability"
+      },
+      "12": {
+        "name": "Slope",
+        "category": "Topography",
+        "subcategory": "Terrain",
+        "unit": "degrees",
+        "physical_meaning": "Surface slope angle",
+        "expected_range": [
+          0,
+          90
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Spread rate modifier"
+      },
+      "13": {
+        "name": "Aspect",
+        "category": "Topography",
+        "subcategory": "Terrain",
+        "unit": "degrees",
+        "physical_meaning": "Slope orientation",
+        "expected_range": [
+          0,
+          360
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Solar exposure and wind interaction"
+      },
+      "14": {
+        "name": "Elevation",
+        "category": "Topography",
+        "subcategory": "Terrain",
+        "unit": "meters",
+        "physical_meaning": "Height above sea level",
+        "expected_range": [
+          0,
+          4000
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Climate and vegetation control"
+      },
+      "15": {
+        "name": "PDSI",
+        "category": "Meteorology",
+        "subcategory": "Drought Index",
+        "unit": "Index",
+        "physical_meaning": "Palmer Drought Severity Index",
+        "expected_range": [
+          -10,
+          10
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Long-term moisture conditions"
+      },
+      "16": {
+        "name": "LandCover_Evergreen_Needleleaf",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Evergreen Needleleaf",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "17": {
+        "name": "LandCover_Evergreen_Broadleaf",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Evergreen Broadleaf",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "18": {
+        "name": "LandCover_Deciduous_Needleleaf",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Deciduous Needleleaf",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "19": {
+        "name": "LandCover_Deciduous_Broadleaf",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Deciduous Broadleaf",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "20": {
+        "name": "LandCover_Mixed_Forest",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Mixed Forest",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "21": {
+        "name": "LandCover_Closed_Shrublands",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Closed Shrublands",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "22": {
+        "name": "LandCover_Open_Shrublands",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Open Shrublands",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "23": {
+        "name": "LandCover_Woody_Savannas",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Woody Savannas",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "24": {
+        "name": "LandCover_Savannas",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Savannas",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "25": {
+        "name": "LandCover_Grasslands",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Grasslands",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "High",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "26": {
+        "name": "LandCover_Permanent_Wetlands",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Permanent Wetlands",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "27": {
+        "name": "LandCover_Croplands",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Croplands",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "28": {
+        "name": "LandCover_Urban_Built",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Urban Built",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "29": {
+        "name": "LandCover_Cropland_Natural",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Cropland Natural",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "30": {
+        "name": "LandCover_Snow_Ice",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Snow Ice",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "31": {
+        "name": "LandCover_Barren",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Barren",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "32": {
+        "name": "LandCover_Water_Bodies",
+        "category": "Land Cover",
+        "subcategory": "Binary Classification",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Presence of Water Bodies",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Medium",
+        "fire_relevance": "Fuel type and fire behavior determinant"
+      },
+      "33": {
+        "name": "Forecast_Precipitation",
+        "category": "Meteorology",
+        "subcategory": "Forecast",
+        "unit": "mm",
+        "physical_meaning": "Predicted precipitation",
+        "expected_range": [
+          0,
+          100
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Future conditions for spread prediction"
+      },
+      "34": {
+        "name": "Forecast_Wind_Speed",
+        "category": "Meteorology",
+        "subcategory": "Forecast",
+        "unit": "m/s",
+        "physical_meaning": "Predicted wind speed",
+        "expected_range": [
+          0,
+          30
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Future conditions for spread prediction"
+      },
+      "35": {
+        "name": "Forecast_Wind_Direction",
+        "category": "Meteorology",
+        "subcategory": "Forecast",
+        "unit": "degrees",
+        "physical_meaning": "Predicted wind direction",
+        "expected_range": [
+          0,
+          360
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Future conditions for spread prediction"
+      },
+      "36": {
+        "name": "Forecast_Temperature",
+        "category": "Meteorology",
+        "subcategory": "Forecast",
+        "unit": "°C",
+        "physical_meaning": "Predicted temperature",
+        "expected_range": [
+          -40,
+          50
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Future conditions for spread prediction"
+      },
+      "37": {
+        "name": "Forecast_Specific_Humidity",
+        "category": "Meteorology",
+        "subcategory": "Forecast",
+        "unit": "kg/kg",
+        "physical_meaning": "Predicted humidity",
+        "expected_range": [
+          -30,
+          60
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Future conditions for spread prediction"
+      },
+      "38": {
+        "name": "Active_Fire",
+        "category": "Fire Detection",
+        "subcategory": "Continuous",
+        "unit": "Confidence",
+        "physical_meaning": "Fire detection confidence",
+        "expected_range": [
+          0,
+          100
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Current fire activity"
+      },
+      "39": {
+        "name": "Active_Fire_Binary",
+        "category": "Fire Detection",
+        "subcategory": "Binary",
+        "unit": "Binary (0/1)",
+        "physical_meaning": "Binary fire presence",
+        "expected_range": [
+          0,
+          1
+        ],
+        "modeling_importance": "Critical",
+        "fire_relevance": "Target variable for spread prediction"
+      }
+    }
+  },
+  "data_quality_assessment": {
+    "inventory_summary": null,
+    "feature_quality": null
+  },
+  "feature_engineering": {
+    "engineered_results": null,
+    "temporal_features_available": false
+  },
+  "feature_importance": {
+    "importance_results": null,
+    "top_features": null
+  },
+  "class_imbalance": {
+    "imbalance_statistics": null,
+    "summary_stats": {
+      "avg_fire_ratio": null,
+      "avg_imbalance_ratio": null
+    }
+  },
+  "modeling_recommendations": {
+    "data_preprocessing": {
+      "title": "🔧 Data Preprocessing Strategy",
+      "recommendations": [
+        {
+          "category": "Feature Scaling",
+          "priority": "High",
+          "description": "Standardize meteorological features, normalize vegetation indices",
+          "implementation": "Use RobustScaler for weather data (resistant to outliers), MinMaxScaler for NDVI/EVI2"
+        },
+        {
+          "category": "Missing Value Handling",
+          "priority": "High",
+          "description": "Implement domain-aware imputation strategies",
+          "implementation": "Temporal interpolation for weather, spatial interpolation for remote sensing"
+        },
+        {
+          "category": "Feature Engineering",
+          "priority": "Critical",
+          "description": "Create fire-specific derived features",
+          "implementation": "Temporal gradients, fire weather indices, wind components, topographic complexity"
+        },
+        {
+          "category": "Class Balancing",
+          "priority": "Critical",
+          "description": "Address severe class imbalance in fire pixels",
+          "implementation": "Stratified sampling, focal loss, weighted loss functions"
+        }
+      ]
+    },
+    "cnn_modeling": {
+      "title": "🧠 Convolutional Neural Network Approach",
+      "recommendations": [
+        {
+          "category": "Architecture Design",
+          "priority": "High",
+          "description": "Multi-scale CNN with temporal fusion",
+          "implementation": "U-Net backbone with LSTM for temporal modeling, attention mechanisms for feature weighting"
+        },
+        {
+          "category": "Input Strategy",
+          "priority": "High",
+          "description": "Multi-temporal input windows",
+          "implementation": "3-5 day temporal windows, channel-wise feature importance weighting"
+        },
+        {
+          "category": "Loss Function",
+          "priority": "Critical",
+          "description": "Handle class imbalance effectively",
+          "implementation": "Focal Loss with α=0.25, γ=2, or Dice Loss for segmentation"
+        },
+        {
+          "category": "Data Augmentation",
+          "priority": "Medium",
+          "description": "Fire-aware augmentation strategies",
+          "implementation": "Rotation, flipping (preserve fire spread physics), temporal jittering"
+        }
+      ]
+    },
+    "cellular_automata": {
+      "title": "🔬 Cellular Automata Approach",
+      "recommendations": [
+        {
+          "category": "Rule Design",
+          "priority": "Critical",
+          "description": "Physics-informed transition rules",
+          "implementation": "Wind-direction spread bias, slope-based acceleration, fuel-type dependent rates"
+        },
+        {
+          "category": "Neighborhood Design",
+          "priority": "High",
+          "description": "Extended neighborhood for wind effects",
+          "implementation": "Moore neighborhood + wind-direction extended cells, adaptive neighborhood size"
+        },
+        {
+          "category": "Parameter Learning",
+          "priority": "High",
+          "description": "Data-driven parameter optimization",
+          "implementation": "Genetic algorithms or gradient-based optimization for transition probabilities"
+        },
+        {
+          "category": "Multi-state Modeling",
+          "priority": "Medium",
+          "description": "Multiple fire states beyond binary",
+          "implementation": "Ignition, active burning, smoldering, extinguished states"
+        }
+      ]
+    },
+    "hybrid_approach": {
+      "title": "🔗 Hybrid CNN-CA Approach",
+      "recommendations": [
+        {
+          "category": "Integration Strategy",
+          "priority": "Critical",
+          "description": "CNN for global context, CA for local dynamics",
+          "implementation": "CNN predicts CA parameters (ignition probability, spread rate), CA simulates spread"
+        },
+        {
+          "category": "Multi-scale Fusion",
+          "priority": "High",
+          "description": "Different scales for different components",
+          "implementation": "CNN at 375m resolution, CA at 125m for fine-scale dynamics"
+        },
+        {
+          "category": "Uncertainty Quantification",
+          "priority": "High",
+          "description": "Ensemble methods for prediction confidence",
+          "implementation": "Multiple CA runs with CNN-sampled parameters, Bayesian neural networks"
+        },
+        {
+          "category": "Real-time Adaptation",
+          "priority": "Medium",
+          "description": "Online parameter updates",
+          "implementation": "Kalman filtering or particle filters for parameter tracking"
+        }
+      ]
+    },
+    "validation_strategy": {
+      "title": "✅ Validation and Evaluation Strategy",
+      "recommendations": [
+        {
+          "category": "Data Splitting",
+          "priority": "Critical",
+          "description": "Temporal and spatial validation",
+          "implementation": "2018-2019 train, 2020 validation, 2021 test + geographic cross-validation"
+        },
+        {
+          "category": "Evaluation Metrics",
+          "priority": "Critical",
+          "description": "Fire-specific performance metrics",
+          "implementation": "AUPRC, IoU, Hausdorff distance, F1-Score, spread trajectory overlap"
+        },
+        {
+          "category": "Physical Validation",
+          "priority": "High",
+          "description": "Domain knowledge consistency checks",
+          "implementation": "Wind-direction alignment, fuel-type spread rates, topographic effects"
+        },
+        {
+          "category": "Extreme Event Testing",
+          "priority": "High",
+          "description": "Performance on large/fast fires",
+          "implementation": "Separate evaluation on identified extreme events, stress testing"
+        }
+      ]
+    }
+  },
+  "key_findings": {
+    "critical_features": [
+      "Wind_Speed",
+      "Wind_Direction",
+      "Temperature_Max",
+      "Active_Fire",
+      "ERC"
+    ],
+    "class_imbalance_severity": "Severe (>100:1 ratio expected)",
+    "recommended_approach": "Hybrid CNN-CA with focal loss",
+    "data_quality": "Good with some preprocessing needs",
+    "feature_engineering_priority": "Critical for success"
+  }
+}

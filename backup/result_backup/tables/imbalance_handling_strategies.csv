@@ -1,0 +1,5 @@
+Threshold,Positive_Ratio,Imbalance_Ratio,Recommended_Strategy
+0.1,0.0005,999.5,SMOTE + Undersampling + Focal Loss
+0.3,0.0005,999.5,SMOTE + Undersampling + Focal Loss
+0.5,0.0005,999.5,SMOTE + Undersampling + Focal Loss
+0.7,0.0005,999.5,SMOTE + Undersampling + Focal Loss

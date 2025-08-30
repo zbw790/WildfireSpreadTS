@@ -1,0 +1,74 @@
+{
+  "analysis_modules_completed": [
+    "数据质量分析",
+    "描述性统计分析",
+    "时空分布分析",
+    "特征关系分析",
+    "目标变量分析",
+    "环境变量分析",
+    "预处理需求分析",
+    "高级可视化分析"
+  ],
+  "key_findings": {
+    "data_quality": {
+      "total_samples": 7168781,
+      "n_fire_events": 40,
+      "years_covered": [
+        "2018",
+        "2019",
+        "2020",
+        "2021"
+      ]
+    },
+    "strong_correlations": 0,
+    "fire_characteristics": {
+      "mean_confidence": 0.023905737325549126,
+      "max_confidence": 22.0,
+      "fire_data_points": 7168781
+    }
+  },
+  "recommendations": [
+    "基于极端类别不平衡，建议使用专门的损失函数（如Focal Loss）",
+    "考虑实施数据增强策略以增加火点样本的多样性",
+    "对不同类型的环境变量采用适当的标准化方法",
+    "利用强相关特征进行特征选择和降维",
+    "考虑时空建模方法来捕获火灾传播的动态特征"
+  ],
+  "files_generated": {
+    "figures": [
+      "annual_trends.png",
+      "correlation_matrix.png",
+      "descriptive_statistics_distributions.png",
+      "dimensionality_reduction.png",
+      "feature_importance.png",
+      "fire_event_intensity_distribution.png",
+      "missing_values_analysis.png",
+      "normalization_recommendations.png",
+      "outlier_analysis.png",
+      "statistical_summary_heatmap.png",
+      "target_correlations.png",
+      "target_variable_analysis.png",
+      "vegetation_health_distribution.png",
+      "weather_variables_distribution.png"
+    ],
+    "tables": [
+      "annual_analysis.csv",
+      "descriptive_statistics.csv",
+      "fire_confidence_statistics.csv",
+      "fire_events_analysis.csv",
+      "missing_values_report.csv",
+      "normalization_analysis.csv",
+      "outlier_analysis_report.csv",
+      "strong_correlations.csv",
+      "target_correlations.csv",
+      "threshold_analysis.csv",
+      "vegetation_analysis.csv",
+      "weather_analysis.csv"
+    ],
+    "reports": [
+      "comprehensive_eda_report.md",
+      "figure_index.md",
+      "table_index.md"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+Channel_ID,Channel_Name,Health_Category,Proportion
+3,NDVI,No_Vegetation,0.0039
+3,NDVI,Sparse_Vegetation,0.0000
+3,NDVI,Moderate_Vegetation,0.0000
+3,NDVI,Dense_Vegetation,0.0000
+3,NDVI,Very_Dense_Vegetation,0.9961
+4,EVI2,No_Vegetation,0.0039
+4,EVI2,Low_Vegetation,0.0000
+4,EVI2,Moderate_Vegetation,0.0000
+4,EVI2,High_Vegetation,0.0000
+4,EVI2,Very_High_Vegetation,0.9961

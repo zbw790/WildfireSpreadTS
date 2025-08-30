@@ -1,0 +1,37 @@
+WILDFIRE FEATURE NORMALIZATION STATISTICS
+==================================================
+
+Computed from 607 training files
+Training years: [2018, 2020]
+Number of sequences: 10572
+Timestamp: 2025-08-27T01:01:54
+
+FEATURE STATISTICS:
+--------------------
+VIIRS_M11           : mean=2532.4434, std=1347.0280
+VIIRS_I2            : mean=3447.1858, std=1936.2894
+VIIRS_I1            : mean=2634.1260, std=2223.6204
+NDVI                : mean=3396.8389, std=1433.1276
+EVI2                : mean=1690.4183, std=672.6735
+Total_Precip        : mean=  0.0000, std=  1.0000
+Wind_Speed          : mean=  2.5026, std=  1.3668
+Wind_Direction      : mean=197.2330, std= 86.7955
+Min_Temp_K          : mean=275.5563, std=  5.7535
+Max_Temp_K          : mean=288.4467, std=  4.1640
+ERC                 : mean= 45.9121, std= 19.9702
+Spec_Hum            : mean=  0.0041, std=  0.0021
+PDSI                : mean=  1.7671, std=  2.3890
+Slope               : mean=164.7470, std=110.0693
+Aspect              : mean=838.7780, std=859.0544
+Elevation           : mean= -2.3354, std=  0.5513
+Landcover           : mean= 10.0945, std=  2.0802
+Forecast_Precip     : mean= 13.5348, std= 22.2097
+Forecast_Wind_Speed : mean=  1.0030, std=  0.5766
+Forecast_Wind_Dir   : mean=-12.1184, std= 49.3030
+Forecast_Temp_C     : mean= 10.1957, std=  3.6152
+Forecast_Spec_Hum   : mean=  0.0044, std=  0.0017
+Active_Fire         : mean=  0.0000, std=  1.0000
+
+BEST FEATURES USED: [3, 4, 0, 1, 2, 13, 14, 15, 16, 5, 8, 9, 22]
+ANGULAR FEATURES: [7, 14, 19]
+STATIC FEATURES: [13, 14, 15, 16]

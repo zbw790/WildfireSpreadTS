@@ -1,0 +1,44 @@
+[18:30:55] EDA script started | Memory: 0.2GB
+[18:31:13] Running Section 1: Initial Assessment (所有年份) | Memory: 0.3GB
+[18:31:13] Data type info saved | Memory: 0.3GB
+[18:31:13] Data health check saved | Memory: 0.3GB
+[18:31:13] Numerical summary saved | Memory: 0.3GB
+[18:31:13] Data dictionary saved | Memory: 0.3GB
+[18:31:13] Running Section 3: Univariate Analysis (所有年份) | Memory: 0.3GB
+[18:31:13] Using sample of 50,000 rows for plotting | Memory: 0.3GB
+[18:31:16] Saved distribution plots batch 1/2 | Memory: 0.3GB
+[18:31:18] Saved distribution plots batch 2/2 | Memory: 0.3GB
+[18:31:18] Saved landcover distribution | Memory: 0.3GB
+[18:31:18] Running Section 4: Bivariate Analysis (所有年份) | Memory: 0.3GB
+[18:31:18] Saved correlation heatmap | Memory: 0.3GB
+[18:31:18] Saved temperature vs. fire boxplot | Memory: 0.3GB
+[18:31:18] EDA script completed | Memory: 0.3GB
+[18:32:22] EDA script started | Memory: 0.2GB
+[18:32:39] Running Section 1: Initial Assessment (所有年份) | Memory: 0.3GB
+[18:32:39] Data type info saved | Memory: 0.3GB
+[18:32:40] Data health check saved | Memory: 0.3GB
+[18:32:40] Numerical summary saved | Memory: 0.3GB
+[18:32:40] Data dictionary saved | Memory: 0.3GB
+[18:32:40] Running Section 3: Univariate Analysis (所有年份) | Memory: 0.3GB
+[18:32:40] Using sample of 50,000 rows for plotting | Memory: 0.3GB
+[18:32:42] Saved distribution plots batch 1/2 | Memory: 0.3GB
+[18:32:44] Saved distribution plots batch 2/2 | Memory: 0.3GB
+[18:32:44] Saved landcover distribution | Memory: 0.3GB
+[18:32:44] Running Section 4: Bivariate Analysis (所有年份) | Memory: 0.3GB
+[18:32:45] Saved correlation heatmap | Memory: 0.3GB
+[18:32:45] Saved temperature vs. fire boxplot | Memory: 0.3GB
+[18:32:45] EDA script completed | Memory: 0.3GB
+[18:36:23] EDA script started | Memory: 0.2GB
+[18:38:41] EDA script started | Memory: 0.2GB
+[18:40:14] EDA script started | Memory: 0.2GB
+[18:41:32] EDA script started | Memory: 0.2GB
+[18:43:57] EDA script started | Memory: 0.2GB
+[18:44:08] EDA script completed | Memory: 0.2GB
+[18:45:58] EDA script started | Memory: 0.2GB
+[18:49:45] EDA script started | Memory: 0.2GB
+[18:49:45] EDA script completed | Memory: 0.2GB
+[18:50:13] EDA script started | Memory: 0.2GB
+[18:50:13] EDA script completed | Memory: 0.2GB
+[18:50:21] EDA script started | Memory: 0.2GB
+[18:50:21] EDA script completed | Memory: 0.2GB
+[18:52:26] EDA script started | Memory: 0.2GB

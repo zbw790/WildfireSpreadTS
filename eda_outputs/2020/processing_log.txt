@@ -1,0 +1,26 @@
+[18:30:58] Running Section 1: Initial Assessment (2020) | Memory: 0.2GB
+[18:30:58] Data type info saved | Memory: 0.2GB
+[18:30:58] Data health check saved | Memory: 0.2GB
+[18:30:58] Numerical summary saved | Memory: 0.2GB
+[18:30:58] Data dictionary saved | Memory: 0.2GB
+[18:30:58] Running Section 3: Univariate Analysis (2020) | Memory: 0.2GB
+[18:30:58] Using sample of 50,000 rows for plotting | Memory: 0.2GB
+[18:31:01] Saved distribution plots batch 1/2 | Memory: 0.3GB
+[18:31:03] Saved distribution plots batch 2/2 | Memory: 0.3GB
+[18:31:03] Saved landcover distribution | Memory: 0.3GB
+[18:31:03] Running Section 4: Bivariate Analysis (2020) | Memory: 0.3GB
+[18:31:03] Saved correlation heatmap | Memory: 0.3GB
+[18:31:03] Saved temperature vs. fire boxplot | Memory: 0.3GB
+[18:32:25] Running Section 1: Initial Assessment (2020) | Memory: 0.2GB
+[18:32:25] Data type info saved | Memory: 0.2GB
+[18:32:25] Data health check saved | Memory: 0.2GB
+[18:32:26] Numerical summary saved | Memory: 0.2GB
+[18:32:26] Data dictionary saved | Memory: 0.2GB
+[18:32:26] Running Section 3: Univariate Analysis (2020) | Memory: 0.2GB
+[18:32:26] Using sample of 50,000 rows for plotting | Memory: 0.2GB
+[18:32:28] Saved distribution plots batch 1/2 | Memory: 0.3GB
+[18:32:30] Saved distribution plots batch 2/2 | Memory: 0.3GB
+[18:32:30] Saved landcover distribution | Memory: 0.3GB
+[18:32:30] Running Section 4: Bivariate Analysis (2020) | Memory: 0.3GB
+[18:32:30] Saved correlation heatmap | Memory: 0.3GB
+[18:32:30] Saved temperature vs. fire boxplot | Memory: 0.3GB

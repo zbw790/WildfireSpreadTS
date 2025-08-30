@@ -1,0 +1,8 @@
+Channel_ID,Channel_Name,Mean,Std,CV
+5,Temperature,0.7189,2.6425,3.6760
+6,Humidity,3.5907,1.4028,0.3907
+7,Wind_Direction,210.7525,80.0604,0.3799
+8,Wind_Speed,283.2343,8.0944,0.0286
+9,Precipitation,299.3715,8.9939,0.0300
+10,Surface_Pressure,67.3206,26.4240,0.3925
+11,Solar_Radiation,0.0056,0.0021,0.3838

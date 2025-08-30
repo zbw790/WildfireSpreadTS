@@ -1,0 +1,124 @@
+Fire Simulation Summary - Detailed Daily Analysis
+===============================================
+
+Fire Event: data/processed/2019\fire_22710141.hdf5
+Start Day: 0
+Simulation Days: 10
+Ground Truth Available: Yes
+Threshold Used: 0.3
+
+DAILY ANALYSIS:
+==============
+
+Day 1:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 0
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 2:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 0
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 3:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 0
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 4:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 0
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 5:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 10
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 6:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 8
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 7:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 14
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 8:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 0
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 9:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 0
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+Day 10:
+  Predicted Fire Pixels: 0
+  Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
+  Ground Truth Pixels: 0
+  IoU: 0.0000
+  Precision: 0.0000, Recall: 0.0000
+  Dice Score: 0.0000
+
+
+OVERALL STATISTICS:
+==================
+Total Predicted Fire Pixels: 0
+Maximum Fire Pixels (Single Day): 0
+Average Fire Pixels Per Day: 0.0
+Total Ground Truth Fire Pixels: 32
+Prediction/GT Pixel Ratio: 0.000
+Average IoU: 0.0000
+Average Dice Score: 0.0000
+Average Precision: 0.0000
+Average Recall: 0.0000
+
+PERFORMANCE ANALYSIS:
+====================
+WARNING: Zero IoU suggests complete prediction failure!
+Possible causes:
+- Fire channel preprocessing issues
+- Threshold mismatch (using 0.3)
+- Model output range problems
+- Ground truth alignment issues
+Best Performance: Day 1 (IoU: 0.0000)
+Worst Performance: Day 1 (IoU: 0.0000)
+
+DIAGNOSTIC WARNING:
+==================
+No fire pixels predicted across all days!
+This suggests:
+1. Model output values too low (all < 0.3)
+2. Fire channel preprocessing removing all fire information
+3. Input fire channel completely zero
+Check debug output for model prediction ranges and input fire pixels.
