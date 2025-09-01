@@ -1,0 +1,72 @@
+{
+  "experiment_info": {
+    "total_variables_tested": 6,
+    "simulation_days": 5,
+    "fire_threshold": 0.3,
+    "timestamp": "2025-09-01T12:10:50"
+  },
+  "overall_performance": {
+    "physics_consistency_rate": "1/6 (16.7%)",
+    "mean_correlation": NaN,
+    "median_correlation": NaN,
+    "strong_responses": 0,
+    "moderate_responses": 1,
+    "weak_responses": 0
+  },
+  "variable_details": {
+    "Max_Temp_K": {
+      "correlation": -0.6123724356957945,
+      "p_value": 0.14381080871160368,
+      "r_squared": 0.37500000000000006,
+      "physics_consistent": false,
+      "max_fire_area_change": 163600.0,
+      "min_fire_area_change": 0.0,
+      "baseline_total_area": 0.0
+    },
+    "Slope": {
+      "correlation": NaN,
+      "p_value": 1.0,
+      "r_squared": 0.0,
+      "physics_consistent": false,
+      "max_fire_area_change": 0.0,
+      "min_fire_area_change": 0.0,
+      "baseline_total_area": 0.0
+    },
+    "NDVI": {
+      "correlation": NaN,
+      "p_value": 1.0,
+      "r_squared": 0.0,
+      "physics_consistent": false,
+      "max_fire_area_change": 0.0,
+      "min_fire_area_change": 0.0,
+      "baseline_total_area": 0.0
+    },
+    "Total_Precip": {
+      "correlation": NaN,
+      "p_value": 1.0,
+      "r_squared": 0.0,
+      "physics_consistent": true,
+      "max_fire_area_change": 0.0,
+      "min_fire_area_change": 0.0,
+      "baseline_total_area": 0.0
+    },
+    "EVI2": {
+      "correlation": NaN,
+      "p_value": 1.0,
+      "r_squared": 0.0,
+      "physics_consistent": false,
+      "max_fire_area_change": 0.0,
+      "min_fire_area_change": 0.0,
+      "baseline_total_area": 0.0
+    },
+    "VIIRS_M11": {
+      "correlation": NaN,
+      "p_value": 1.0,
+      "r_squared": 0.0,
+      "physics_consistent": false,
+      "max_fire_area_change": 0.0,
+      "min_fire_area_change": 0.0,
+      "baseline_total_area": 0.0
+    }
+  }
+}

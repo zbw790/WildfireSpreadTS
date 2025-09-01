@@ -4,7 +4,7 @@ WILDFIRE SPREAD SIMULATION - COMPLETE EVOLUTION ANALYSIS
 
 Model Information:
 - Model Path: best_fire_model_official.pth
-- Analysis Date: 2025-08-27
+- Analysis Date: 2025-09-01
 - Fire Event: fire_22710141.hdf5
 - Time Windows Analyzed: 13
 
@@ -12,7 +12,7 @@ EVOLUTION SUMMARY:
 ================
 Duration: Day 0 to Day 12
 Accuracy Trend: declining
-Mean Accuracy: 0.0000 IoU
+Mean Accuracy: 0.0147 IoU
 Fire Growth Rate: 0.00 pixels/day
 Peak Fire Activity: Day 7
 
@@ -20,11 +20,11 @@ TEMPORAL ANALYSIS:
 =================
 1. Model Performance:
    - declining accuracy trend
-   - Best predictions on day 0
-   - Mean accuracy: 0.0000
+   - Best predictions on day 6
+   - Mean accuracy: 0.0147
 
 2. Environmental Correlations:
-   - Temperature-accuracy correlation: nan
+   - Temperature-accuracy correlation: -0.129
    - Environmental conditions influence prediction quality
    - Fire behavior complexity varies with weather
 

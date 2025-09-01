@@ -1,0 +1,57 @@
+{
+  "variable_name": "Slope",
+  "baseline_area": 0.0,
+  "perturbations": [
+    -0.4,
+    -0.19999999999999998,
+    5.551115123125783e-17,
+    0.20000000000000007,
+    0.40000000000000013,
+    0.6000000000000002,
+    0.8
+  ],
+  "fire_areas": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "area_changes": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "correlation": NaN,
+  "slope": 0.0,
+  "intercept": 0.0,
+  "r_value": 0.0,
+  "p_value": 1.0,
+  "std_err": 0.0,
+  "physics_consistent": false,
+  "physics_hypothesis": {
+    "expected_direction": "positive",
+    "expected_magnitude": "strong",
+    "physical_principle": "上坡地形使火焰更接近燃料，增强预热效应",
+    "perturbation_range": [
+      -0.4,
+      0.8
+    ],
+    "perturbation_steps": 7
+  },
+  "experiment_config": {
+    "simulation_days": 5,
+    "fire_threshold": 0.3,
+    "perturbation_range": [
+      -0.4,
+      0.8
+    ],
+    "perturbation_steps": 7
+  }
+}
