@@ -76,49 +76,91 @@ class PhysicsValidationConfig:
             'Wind_Speed': {
                 'expected_direction': 'positive',
                 'expected_magnitude': 'strong',
-                'physical_principle': '风速增加提供更多氧气，加速火焰蔓延，携带火星扩散',
+                'physical_principle': 'Wind increases oxygen supply and flame spread rate',
                 'perturbation_range': (-0.5, 1.0),
                 'perturbation_steps': 8
             },
             'Max_Temp_K': {
                 'expected_direction': 'positive',
                 'expected_magnitude': 'moderate',
-                'physical_principle': '温度升高降低燃料点燃阈值，加速热解过程',
+                'physical_principle': 'Higher temperature reduces fuel ignition threshold',
+                'perturbation_range': (-0.3, 0.5),
+                'perturbation_steps': 7
+            },
+            'Min_Temp_K': {
+                'expected_direction': 'positive',
+                'expected_magnitude': 'moderate',
+                'physical_principle': 'Higher minimum temperature indicates drier conditions',
                 'perturbation_range': (-0.3, 0.5),
                 'perturbation_steps': 7
             },
             'Slope': {
                 'expected_direction': 'positive',
                 'expected_magnitude': 'strong',
-                'physical_principle': '上坡地形使火焰更接近燃料，增强预热效应',
+                'physical_principle': 'Upslope terrain enhances fire spread via preheating',
                 'perturbation_range': (-0.4, 0.8),
                 'perturbation_steps': 7
+            },
+            'Aspect': {
+                'expected_direction': 'variable',
+                'expected_magnitude': 'moderate',
+                'physical_principle': 'South-facing slopes receive more solar radiation',
+                'perturbation_range': (-0.3, 0.3),
+                'perturbation_steps': 6
+            },
+            'Elevation': {
+                'expected_direction': 'negative',
+                'expected_magnitude': 'weak',
+                'physical_principle': 'Higher elevation often means cooler temperatures',
+                'perturbation_range': (-0.2, 0.4),
+                'perturbation_steps': 6
+            },
+            'Landcover': {
+                'expected_direction': 'variable',
+                'expected_magnitude': 'moderate',
+                'physical_principle': 'Different vegetation types have varying flammability',
+                'perturbation_range': (-0.3, 0.5),
+                'perturbation_steps': 6
             },
             'NDVI': {
                 'expected_direction': 'positive',
                 'expected_magnitude': 'moderate',
-                'physical_principle': 'NDVI高表示植被密度大，提供更多可燃物质',
+                'physical_principle': 'High NDVI indicates dense vegetation providing fuel',
+                'perturbation_range': (-0.4, 0.6),
+                'perturbation_steps': 6
+            },
+            'EVI2': {
+                'expected_direction': 'positive',
+                'expected_magnitude': 'moderate',
+                'physical_principle': 'EVI2 reflects vegetation vigor and biomass',
                 'perturbation_range': (-0.4, 0.6),
                 'perturbation_steps': 6
             },
             'Total_Precip': {
                 'expected_direction': 'negative',
                 'expected_magnitude': 'strong',
-                'physical_principle': '降水增加燃料湿度，抑制燃烧和火势蔓延',
+                'physical_principle': 'Precipitation increases fuel moisture content',
                 'perturbation_range': (-0.8, 1.5),
                 'perturbation_steps': 8
-            },
-            'EVI2': {
-                'expected_direction': 'positive',
-                'expected_magnitude': 'moderate',
-                'physical_principle': 'EVI2反映植被活力，与可燃生物量正相关',
-                'perturbation_range': (-0.4, 0.6),
-                'perturbation_steps': 6
             },
             'VIIRS_M11': {
                 'expected_direction': 'positive',
                 'expected_magnitude': 'moderate',
-                'physical_principle': '热红外辐射强度与地表温度和火活动正相关',
+                'physical_principle': 'Thermal infrared correlates with surface temperature',
+                'perturbation_range': (-0.3, 0.7),
+                'perturbation_steps': 6
+            },
+            'VIIRS_I2': {
+                'expected_direction': 'positive',
+                'expected_magnitude': 'moderate',
+                'physical_principle': 'Near-infrared reflectance indicates dry vegetation',
+                'perturbation_range': (-0.3, 0.7),
+                'perturbation_steps': 6
+            },
+            'VIIRS_I1': {
+                'expected_direction': 'positive',
+                'expected_magnitude': 'moderate',
+                'physical_principle': 'Red reflectance sensitive to vegetation stress',
                 'perturbation_range': (-0.3, 0.7),
                 'perturbation_steps': 6
             }
@@ -342,7 +384,7 @@ class PhysicsVisualizationGenerator:
             # Panel 0: Baseline (top-left)
             baseline_frame = baseline_pred[frame_day]
             im0 = axes[0].imshow(baseline_frame, cmap='Reds', vmin=0, vmax=1)
-            axes[0].set_title(f'{variable_name}\nBaseline (无扰动)', fontsize=10)
+            axes[0].set_title(f'{variable_name}\nBaseline (No Perturbation)', fontsize=10)
             axes[0].axis('off')
             
             # Add colorbar to first panel
@@ -369,7 +411,7 @@ class PhysicsVisualizationGenerator:
                     current_area = np.sum(frame > self.config.fire_threshold)
                     area_change = ((current_area - baseline_area) / max(baseline_area, 1)) * 100
                     
-                    ax.set_title(f'扰动: {perturbation:+.1%}\n面积变化: {area_change:+.1f}%', 
+                    ax.set_title(f'Perturbation: {perturbation:+.1%}\nArea Change: {area_change:+.1f}%', 
                                fontsize=9)
                     ax.axis('off')
                 else:
@@ -378,11 +420,11 @@ class PhysicsVisualizationGenerator:
             # Overall title
             correlation = experiment_results['correlation']
             physics_consistent = experiment_results['physics_consistent']
-            consistency_text = "✓ 符合物理预期" if physics_consistent else "✗ 不符合物理预期"
+            consistency_text = "Physics Consistent" if physics_consistent else "Physics Inconsistent"
             
             fig.suptitle(
-                f'{variable_name} 扰动实验 - 第{frame_day+1}天\n'
-                f'相关系数: {correlation:.3f} | {consistency_text}',
+                f'{variable_name} Perturbation Experiment - Day {frame_day+1}\n'
+                f'Correlation: {correlation:.3f} | {consistency_text}',
                 fontsize=14, fontweight='bold'
             )
             
@@ -408,6 +450,142 @@ class PhysicsVisualizationGenerator:
         plt.close(fig)
         return anim
     
+    def create_fire_evolution_analysis(self, experiment_results, output_path):
+        """Create fire evolution analysis similar to test_simulation"""
+        
+        variable_name = experiment_results['variable_name']
+        baseline_pred = experiment_results['baseline_prediction']
+        perturbations = experiment_results['perturbations']
+        predictions = experiment_results['predictions']
+        
+        # Create 4-panel analysis for baseline and selected perturbations
+        fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+        
+        # Select representative perturbations
+        if len(perturbations) >= 4:
+            selected_indices = [0, len(perturbations)//3, 2*len(perturbations)//3, len(perturbations)-1]
+        else:
+            selected_indices = list(range(len(perturbations)))
+        
+        # Calculate fire areas over time for each case
+        baseline_areas = []
+        perturbed_areas = [[] for _ in selected_indices]
+        
+        for day in range(len(baseline_pred)):
+            baseline_fire = (baseline_pred[day] > self.config.fire_threshold).astype(float)
+            baseline_areas.append(np.sum(baseline_fire))
+            
+            for i, pert_idx in enumerate(selected_indices):
+                if day < len(predictions[pert_idx]):
+                    pert_fire = (predictions[pert_idx][day] > self.config.fire_threshold).astype(float)
+                    perturbed_areas[i].append(np.sum(pert_fire))
+        
+        days = range(1, len(baseline_areas) + 1)
+        
+        # Panel 1: Fire area evolution over time
+        ax1 = axes[0, 0]
+        ax1.plot(days, baseline_areas, 'k-', linewidth=3, label='Baseline', alpha=0.8)
+        
+        colors = plt.cm.RdYlBu_r(np.linspace(0.1, 0.9, len(selected_indices)))
+        for i, (pert_idx, color) in enumerate(zip(selected_indices, colors)):
+            perturbation = perturbations[pert_idx]
+            ax1.plot(days, perturbed_areas[i], color=color, linewidth=2, alpha=0.8,
+                    label=f'{perturbation:+.1%}')
+        
+        ax1.set_xlabel('Day', fontsize=12)
+        ax1.set_ylabel('Fire Area (pixels)', fontsize=12)
+        ax1.set_title('Fire Area Evolution', fontweight='bold')
+        ax1.grid(True, alpha=0.3)
+        ax1.legend()
+        
+        # Panel 2: Cumulative fire area comparison
+        ax2 = axes[0, 1]
+        cumulative_baseline = np.cumsum(baseline_areas)
+        ax2.plot(days, cumulative_baseline, 'k-', linewidth=3, label='Baseline', alpha=0.8)
+        
+        for i, (pert_idx, color) in enumerate(zip(selected_indices, colors)):
+            perturbation = perturbations[pert_idx]
+            cumulative_pert = np.cumsum(perturbed_areas[i])
+            ax2.plot(days, cumulative_pert, color=color, linewidth=2, alpha=0.8,
+                    label=f'{perturbation:+.1%}')
+        
+        ax2.set_xlabel('Day', fontsize=12)
+        ax2.set_ylabel('Cumulative Fire Area (pixels)', fontsize=12)
+        ax2.set_title('Cumulative Fire Impact', fontweight='bold')
+        ax2.grid(True, alpha=0.3)
+        ax2.legend()
+        
+        # Panel 3: Response curve (perturbation vs total fire area)
+        ax3 = axes[1, 0]
+        total_areas = [np.sum(perturbed_areas[i]) for i in range(len(selected_indices))]
+        selected_perts = [perturbations[i] for i in selected_indices]
+        
+        ax3.plot(selected_perts, total_areas, 'bo-', linewidth=2, markersize=8)
+        ax3.axhline(y=np.sum(baseline_areas), color='red', linestyle='--', 
+                   linewidth=2, label='Baseline Total')
+        
+        # Add trend line
+        if len(selected_perts) > 2:
+            z = np.polyfit(selected_perts, total_areas, 1)
+            p = np.poly1d(z)
+            ax3.plot(selected_perts, p(selected_perts), "r--", alpha=0.8, linewidth=2)
+        
+        ax3.set_xlabel(f'{variable_name} Perturbation Factor', fontsize=12)
+        ax3.set_ylabel('Total Fire Area (pixels)', fontsize=12)
+        ax3.set_title('Variable Response Curve', fontweight='bold')
+        ax3.grid(True, alpha=0.3)
+        ax3.legend()
+        
+        # Panel 4: Fire spread pattern comparison (last day)
+        ax4 = axes[1, 1]
+        
+        if len(baseline_pred) > 0:
+            # Show difference between most extreme perturbation and baseline
+            extreme_idx = selected_indices[-1] if len(selected_indices) > 0 else 0
+            last_day = len(baseline_pred) - 1
+            
+            baseline_last = baseline_pred[last_day]
+            if extreme_idx < len(predictions) and last_day < len(predictions[extreme_idx]):
+                extreme_last = predictions[extreme_idx][last_day]
+                
+                # Calculate difference
+                difference = extreme_last - baseline_last
+                
+                im4 = ax4.imshow(difference, cmap='RdBu_r', vmin=-0.5, vmax=0.5)
+                ax4.set_title(f'Fire Pattern Difference\n(Extreme vs Baseline - Day {last_day+1})', 
+                             fontweight='bold')
+                ax4.axis('off')
+                
+                cbar4 = plt.colorbar(im4, ax=ax4, fraction=0.046, pad=0.04)
+                cbar4.set_label('Fire Probability Difference', fontsize=10)
+            else:
+                ax4.text(0.5, 0.5, 'No Data Available', ha='center', va='center',
+                        transform=ax4.transAxes, fontsize=14)
+                ax4.axis('off')
+        
+        # Overall title with physics information
+        correlation = experiment_results['correlation']
+        var_config = self.config.physics_hypotheses[variable_name]
+        expected_dir = var_config['expected_direction']
+        actual_dir = 'positive' if correlation > 0 else 'negative'
+        consistent = expected_dir == actual_dir or expected_dir == 'variable'
+        
+        consistency_text = "Physics Consistent" if consistent else "Physics Inconsistent"
+        
+        plt.suptitle(
+            f'{variable_name} Fire Evolution Analysis\n'
+            f'Expected: {expected_dir.title()}, Observed: {actual_dir.title()} '
+            f'(r={correlation:.3f}) - {consistency_text}',
+            fontsize=16, fontweight='bold'
+        )
+        
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.9)
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"  Fire evolution analysis saved: {output_path}")
+    
     def create_response_curve_plot(self, experiment_results, output_path):
         """Create response curve plot showing variable vs fire area change"""
         
@@ -428,13 +606,13 @@ class PhysicsVisualizationGenerator:
         p = np.poly1d(z)
         ax1.plot(perturbations, p(perturbations), "r--", alpha=0.8, linewidth=2)
         
-        ax1.set_xlabel(f'{variable_name} 扰动系数', fontsize=12)
-        ax1.set_ylabel('火灾面积变化 (%)', fontsize=12)
-        ax1.set_title(f'{variable_name} 响应曲线', fontsize=14, fontweight='bold')
+        ax1.set_xlabel(f'{variable_name} Perturbation Factor', fontsize=12)
+        ax1.set_ylabel('Fire Area Change (%)', fontsize=12)
+        ax1.set_title(f'{variable_name} Response Curve', fontsize=14, fontweight='bold')
         ax1.grid(True, alpha=0.3)
         
         # Add correlation annotation
-        ax1.text(0.05, 0.95, f'相关系数: {correlation:.3f}', 
+        ax1.text(0.05, 0.95, f'Correlation: {correlation:.3f}', 
                 transform=ax1.transAxes, fontsize=12,
                 bbox=dict(boxstyle="round,pad=0.3", facecolor="lightblue", alpha=0.8))
         
@@ -465,6 +643,19 @@ class PhysicsVisualizationGenerator:
         for i, (pert, color) in enumerate(zip(perturbations, colors)):
             areas = [day_areas[i] if i < len(day_areas) else 0 for day_areas in fire_areas_by_day]
             ax2.plot(days, areas, color=color, alpha=0.7, linewidth=1.5, 
+                    label=f'{pert:+.1%}' if i % 2 == 0 or len(perturbations) <= 5 else "")
+        
+        ax2.set_xlabel('Day', fontsize=12)
+        ax2.set_ylabel('Fire Area (pixels)', fontsize=12)
+        ax2.set_title('Fire Evolution under Different Perturbations', fontsize=14, fontweight='bold')
+        ax2.grid(True, alpha=0.3)
+        ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+        
+        plt.tight_layout()
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"  Response curve saved: {output_path}")=0.7, linewidth=1.5, 
                     label=f'{pert:+.1%}' if i % 2 == 0 or len(perturbations) <= 5 else "")
         
         ax2.set_xlabel('天数', fontsize=12)
@@ -505,25 +696,25 @@ class PhysicsValidationAnalyzer:
             
             # Determine response strength
             if abs(results['correlation']) > 0.7:
-                response_strength = "强"
+                response_strength = "Strong"
             elif abs(results['correlation']) > 0.4:
-                response_strength = "中等"
+                response_strength = "Moderate"
             else:
-                response_strength = "弱"
+                response_strength = "Weak"
             
             table_data.append({
-                '物理变量': var_name,
-                '变化范围': f"{var_config['perturbation_range'][0]:+.1%} 到 {var_config['perturbation_range'][1]:+.1%}",
-                '预期影响': var_config['expected_direction'],
-                '实际方向': 'positive' if results['correlation'] > 0 else 'negative',
-                '相关系数': f"{results['correlation']:.4f}",
-                'p值': f"{results['p_value']:.4f}",
-                '最大面积变化': f"{max_area_change:+.1f}%",
-                '最小面积变化': f"{min_area_change:+.1f}%",
-                '响应幅度': f"{area_range:.1f}%",
-                '响应强度': response_strength,
-                '物理一致性': "✓" if results['physics_consistent'] else "✗",
-                '物理原理': var_config['physical_principle']
+                'Physical_Variable': var_name,
+                'Perturbation_Range': f"{var_config['perturbation_range'][0]:+.1%} to {var_config['perturbation_range'][1]:+.1%}",
+                'Expected_Direction': var_config['expected_direction'],
+                'Observed_Direction': 'positive' if results['correlation'] > 0 else 'negative',
+                'Correlation_Coeff': f"{results['correlation']:.4f}",
+                'P_Value': f"{results['p_value']:.4f}",
+                'Max_Area_Change': f"{max_area_change:+.1f}%",
+                'Min_Area_Change': f"{min_area_change:+.1f}%",
+                'Response_Range': f"{area_range:.1f}%",
+                'Response_Strength': response_strength,
+                'Physics_Consistent': "Yes" if results['physics_consistent'] else "No",
+                'Physical_Principle': var_config['physical_principle']
             })
         
         # Create DataFrame and save
@@ -727,6 +918,10 @@ class PhysicsValidationRunner:
                 # Multi-panel comparison GIF
                 gif_path = var_dir / f"{variable_name}_comparison.gif"
                 self.visualizer.create_variable_comparison_gif(results, str(gif_path))
+                
+                # Fire evolution analysis (4-panel like test_simulation)
+                evolution_path = var_dir / f"{variable_name}_fire_evolution.png"
+                self.visualizer.create_fire_evolution_analysis(results, str(evolution_path))
                 
                 # Response curve plot
                 curve_path = var_dir / f"{variable_name}_response_curve.png"
