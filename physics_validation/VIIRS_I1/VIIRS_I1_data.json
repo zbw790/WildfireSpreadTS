@@ -1,0 +1,5 @@
+{
+  "variable_name": "VIIRS_I1",
+  "simulation_days": 20,
+  "baseline_prediction": [
+    

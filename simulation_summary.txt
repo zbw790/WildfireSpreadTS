@@ -1,7 +1,7 @@
 Fire Simulation Summary - Detailed Daily Analysis
 ===============================================
 
-Fire Event: data/processed/2019\fire_22710141.hdf5
+Fire Event: data/processed/2020/fire_24461899.hdf5
 Start Day: 0
 Simulation Days: 10
 Ground Truth Available: Yes
@@ -45,7 +45,7 @@ Day 4:
 Day 5:
   Predicted Fire Pixels: 0
   Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
-  Ground Truth Pixels: 10
+  Ground Truth Pixels: 1368
   IoU: 0.0000
   Precision: 0.0000, Recall: 0.0000
   Dice Score: 0.0000
@@ -53,7 +53,7 @@ Day 5:
 Day 6:
   Predicted Fire Pixels: 0
   Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
-  Ground Truth Pixels: 8
+  Ground Truth Pixels: 796
   IoU: 0.0000
   Precision: 0.0000, Recall: 0.0000
   Dice Score: 0.0000
@@ -61,7 +61,7 @@ Day 6:
 Day 7:
   Predicted Fire Pixels: 0
   Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
-  Ground Truth Pixels: 14
+  Ground Truth Pixels: 208
   IoU: 0.0000
   Precision: 0.0000, Recall: 0.0000
   Dice Score: 0.0000
@@ -69,7 +69,7 @@ Day 7:
 Day 8:
   Predicted Fire Pixels: 0
   Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
-  Ground Truth Pixels: 0
+  Ground Truth Pixels: 39
   IoU: 0.0000
   Precision: 0.0000, Recall: 0.0000
   Dice Score: 0.0000
@@ -77,7 +77,7 @@ Day 8:
 Day 9:
   Predicted Fire Pixels: 0
   Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
-  Ground Truth Pixels: 0
+  Ground Truth Pixels: 33
   IoU: 0.0000
   Precision: 0.0000, Recall: 0.0000
   Dice Score: 0.0000
@@ -85,7 +85,7 @@ Day 9:
 Day 10:
   Predicted Fire Pixels: 0
   Prediction Stats: mean=0.0000, max=0.0000, std=0.0000
-  Ground Truth Pixels: 0
+  Ground Truth Pixels: 40
   IoU: 0.0000
   Precision: 0.0000, Recall: 0.0000
   Dice Score: 0.0000
@@ -96,7 +96,7 @@ OVERALL STATISTICS:
 Total Predicted Fire Pixels: 0
 Maximum Fire Pixels (Single Day): 0
 Average Fire Pixels Per Day: 0.0
-Total Ground Truth Fire Pixels: 32
+Total Ground Truth Fire Pixels: 2484
 Prediction/GT Pixel Ratio: 0.000
 Average IoU: 0.0000
 Average Dice Score: 0.0000

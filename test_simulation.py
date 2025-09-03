@@ -1456,8 +1456,7 @@ def main():
     if args.demo or not args.fire_event:
         # Try to find real fire event first
         possible_files = [
-            # 'data/processed/2020/fire_24461899.hdf5',
-
+            'data/processed/2020/fire_24461899.hdf5',
             'data/processed/2019/*.hdf5',
             'data/processed/*/*.hdf5',
             'fire_*.hdf5',

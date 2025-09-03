@@ -167,7 +167,7 @@ class PhysicsValidationConfig:
         }
         
         # Experiment parameters
-        self.simulation_days = 5
+        self.simulation_days = None
         self.output_dir = "physics_validation"
         self.visualization_grid = (2, 4)  # 8-panel layout
         self.fire_threshold = 0.3
@@ -655,8 +655,6 @@ class PhysicsVisualizationGenerator:
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         plt.close()
         
-        print(f"  Response curve saved: {output_path}")=0.7, linewidth=1.5, 
-                    label=f'{pert:+.1%}' if i % 2 == 0 or len(perturbations) <= 5 else "")
         
         ax2.set_xlabel('天数', fontsize=12)
         ax2.set_ylabel('火灾面积 (像素)', fontsize=12)

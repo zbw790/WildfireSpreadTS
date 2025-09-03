@@ -1,0 +1,5 @@
+{
+  "variable_name": "Min_Temp_K",
+  "simulation_days": 20,
+  "baseline_prediction": [
+    
