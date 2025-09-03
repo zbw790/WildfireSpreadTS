@@ -2,7 +2,7 @@
   "experiment_info": {
     "variables_tested": 12,
     "fire_threshold": 0.3,
-    "timestamp": "2025-09-02T07:27:02"
+    "timestamp": "2025-09-03T02:07:59"
   },
   "overall_performance": {
     "physics_consistency_rate": "3/12 (25.0%)",

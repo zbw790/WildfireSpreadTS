@@ -4,7 +4,7 @@ WILDFIRE SPREAD SIMULATION - COMPLETE EVOLUTION ANALYSIS
 
 Model Information:
 - Model Path: best_fire_model_official.pth
-- Analysis Date: 2025-09-02
+- Analysis Date: 2025-09-03
 - Fire Event: fire_24461899.hdf5
 - Time Windows Analyzed: 25
 
