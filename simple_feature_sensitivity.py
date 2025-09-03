@@ -9,6 +9,8 @@ This tool creates the most important output: animated GIFs showing:
 """
 
 import os
+# Set environment variable to avoid OpenMP duplicate library warnings
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 import numpy as np
 import torch
 import torch.nn as nn
