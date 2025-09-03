@@ -1,0 +1,132 @@
+{
+  "project_title": "🔥 Wildfire Spread Prediction - Deep Learning Analysis",
+  "generated_date": "2025-09-03 07:31:00",
+  "model_performance": {
+    "main_unet": {
+      "training_ap": 0.4925,
+      "validation_ap": 0.1794,
+      "inference_time": "0.58 seconds",
+      "architecture": "U-Net with temporal sequence processing",
+      "input_features": 13,
+      "sequence_length": 5,
+      "spatial_resolution": "128x128"
+    },
+    "baseline_comparison": {
+      "persistence_model": {
+        "ap": 0.0845,
+        "time": "0.00s",
+        "relative_performance": "47%"
+      },
+      "mean_baseline": {
+        "ap": 0.0122,
+        "time": "0.00s",
+        "relative_performance": "7%"
+      },
+      "simple_cnn": {
+        "ap": 0.0069,
+        "time": "1.02s",
+        "relative_performance": "4%"
+      }
+    },
+    "performance_improvement": "2.1x better than best baseline"
+  },
+  "feature_analysis": {
+    "top_features": [
+      "NDVI",
+      "Max_Temp_K",
+      "Total_Precip"
+    ],
+    "sensitivity_analysis": {
+      "perturbation_levels": [
+        -50,
+        -30,
+        -20,
+        -10,
+        0,
+        10,
+        20,
+        30
+      ],
+      "time_period": "26 days",
+      "key_findings": {
+        "NDVI": "±50% changes cause 4x difference in predictions",
+        "Max_Temp_K": "+30% temperature → 2.5x more fire predictions",
+        "Total_Precip": "-50% precipitation → 3x increase in fire spread"
+      }
+    },
+    "autoregressive_analysis": {
+      "innovation": "Recursive prediction using predicted fire points",
+      "stability": "2-3% pixel differences after day 3",
+      "conclusion": "Good recursive prediction stability"
+    }
+  },
+  "data_quality": {
+    "temporal_coverage": {
+      "years": [
+        2018,
+        2019,
+        2020,
+        2021
+      ],
+      "total_events": "Multiple large-scale wildfire events",
+      "primary_validation": "2020 fire event data"
+    },
+    "data_completeness": {
+      "missing_data_rate": "<5%",
+      "feature_count": 23,
+      "selected_features": 13,
+      "quality_score": "High reliability"
+    },
+    "preprocessing": {
+      "angular_transformations": "Applied to wind and aspect features",
+      "normalization": "Z-score using training statistics",
+      "spatial_processing": "Resized to 128x128",
+      "temporal_sequencing": "5-day sliding window"
+    }
+  },
+  "visualizations": {
+    "sensitivity_gifs": {
+      "count": 6,
+      "types": [
+        "Standard prediction",
+        "Autoregressive prediction"
+      ],
+      "features": [
+        "NDVI",
+        "Max_Temp_K",
+        "Total_Precip"
+      ],
+      "format": "3x3 grid, 26-day evolution, 1.25 fps"
+    },
+    "difference_analysis": {
+      "count": 3,
+      "type": "Pixel-level difference heatmaps",
+      "content": "Standard vs autoregressive comparison with statistics"
+    },
+    "model_comparison": {
+      "file": "baseline_comparison.png",
+      "content": "Complete model performance visualization",
+      "highlight": "Main U-Net marked with crown and blue colormap"
+    }
+  },
+  "technical_specs": {
+    "architecture_details": {
+      "model_type": "U-Net with temporal processing",
+      "encoder": "Multi-level feature extraction",
+      "decoder": "Spatial upsampling with skip connections",
+      "activation": "Sigmoid output for probability prediction"
+    },
+    "training_config": {
+      "loss_function": "Binary Cross-Entropy",
+      "optimizer": "Adam",
+      "hardware": "CUDA-enabled GPU",
+      "checkpoint": "Epoch 2 (best validation performance)"
+    },
+    "inference_pipeline": {
+      "input_processing": "5-day sequence preparation",
+      "model_prediction": "Raw sigmoid output",
+      "post_processing": "Fire physics with decay and smoothing",
+      "output_format": "128x128 probability maps"
+    }
+  }
+}
