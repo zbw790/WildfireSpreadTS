@@ -1,0 +1,118 @@
+{
+  "feature_name": "VIIRS_I1",
+  "ground_truth_analysis": {
+    "fire_days": 6,
+    "no_fire_days": 20,
+    "total_days": 26,
+    "fire_day_ratio": 0.23076923076923078,
+    "fire_day_details": [
+      {
+        "day": 4,
+        "fire_pixels": 1348,
+        "fire_ratio": 0.082275390625
+      },
+      {
+        "day": 5,
+        "fire_pixels": 766,
+        "fire_ratio": 0.0467529296875
+      },
+      {
+        "day": 6,
+        "fire_pixels": 195,
+        "fire_ratio": 0.01190185546875
+      },
+      {
+        "day": 7,
+        "fire_pixels": 37,
+        "fire_ratio": 0.00225830078125
+      },
+      {
+        "day": 8,
+        "fire_pixels": 28,
+        "fire_ratio": 0.001708984375
+      }
+    ]
+  },
+  "ap_results": {
+    "Baseline (0%)": {
+      "combined_ap": 0.06252139335246568,
+      "fire_days_only_ap": 0.07502379410906115,
+      "daily_average_ap": 0.056034856701509685,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.199969963658886
+    },
+    "-5000%": {
+      "combined_ap": 0.05912540050477007,
+      "fire_days_only_ap": 0.07290123649818649,
+      "daily_average_ap": 0.05545113585285852,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.2329935336726392
+    },
+    "-3000%": {
+      "combined_ap": 0.06005492553152718,
+      "fire_days_only_ap": 0.07327192670065226,
+      "daily_average_ap": 0.05559231082030369,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.2200818842442245
+    },
+    "-2000%": {
+      "combined_ap": 0.060774124473172146,
+      "fire_days_only_ap": 0.07374169790009377,
+      "daily_average_ap": 0.05565816207440473,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.2133732659965504
+    },
+    "-1000%": {
+      "combined_ap": 0.06168429427770512,
+      "fire_days_only_ap": 0.07441773854745333,
+      "daily_average_ap": 0.055965857917998636,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.206429276995887
+    },
+    "+1000%": {
+      "combined_ap": 0.06312220053176423,
+      "fire_days_only_ap": 0.0754220625676196,
+      "daily_average_ap": 0.05645580675005965,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.1948579411401516
+    },
+    "+2000%": {
+      "combined_ap": 0.06371045754272447,
+      "fire_days_only_ap": 0.07585279329147354,
+      "daily_average_ap": 0.05675963192404103,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.1905862273961283
+    },
+    "+3000%": {
+      "combined_ap": 0.06407565851949734,
+      "fire_days_only_ap": 0.07610225087996006,
+      "daily_average_ap": 0.05711255423070574,
+      "fire_days": 6,
+      "no_fire_days": 20,
+      "total_days": 26,
+      "fire_day_ratio": 0.23076923076923078,
+      "fire_to_combined_ratio": 1.1876936209216358
+    }
+  }
+}

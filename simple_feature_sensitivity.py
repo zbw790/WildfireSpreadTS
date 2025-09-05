@@ -1284,8 +1284,17 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
                 raw_pred = simulator.predict_single_step(initial_seq.unsqueeze(0), debug=False)
                 baseline_predictions.append(raw_pred.numpy())
     
-    # Features to analyze
-    important_features = ['NDVI', 'Max_Temp_K', 'Total_Precip']
+    # Features to analyze - COMPLETE ANALYSIS
+    important_features = [
+        # Vegetation indices (植被指数)
+        'NDVI', 'EVI2',
+        # Weather conditions (气象条件) 
+        'Max_Temp_K', 'Min_Temp_K', 'Total_Precip',
+        # Satellite data (卫星数据)
+        'VIIRS_M11', 'VIIRS_I2', 'VIIRS_I1',
+        # Topographic features (地形特征)
+        'Elevation', 'Slope', 'Aspect'
+    ]
     
     print(f"\nGenerating sensitivity GIFs for: {important_features}")
     

@@ -1,0 +1,50 @@
+🔥 VIIRS_M11 FEATURE SENSITIVITY - AP ANALYSIS REPORT
+================================================================================
+
+📊 GROUND TRUTH DATA DISTRIBUTION
+----------------------------------------
+• Total days analyzed: 26
+• Days with fire: 6 (23.1%)
+• Days without fire: 20 (76.9%)
+
+🔥 FIRE DAYS DETAILS:
+  Day 5: 1348 pixels (8.228%)
+  Day 6: 766 pixels (4.675%)
+  Day 7: 195 pixels (1.190%)
+  Day 8: 37 pixels (0.226%)
+  Day 9: 28 pixels (0.171%)
+  Day 10: 39 pixels (0.238%)
+
+📈 AVERAGE PRECISION (AP) ANALYSIS
+----------------------------------------
+Legend:
+• Combined AP: All days merged (RECOMMENDED method)
+• Fire-only AP: Only days with actual fire
+• Daily Average: Average of individual daily APs (includes 0s)
+
+Scenario        Combined AP  Fire-only AP  Daily Avg   Ratio   
+----------------------------------------------------------------------
++3000%          0.0626       0.0751        0.0558      1.20    
++1000%          0.0626       0.0750        0.0559      1.20    
+Baseline (0%)   0.0625       0.0750        0.0560      1.20    
++2000%          0.0625       0.0750        0.0560      1.20    
+-1000%          0.0621       0.0747        0.0562      1.20    
+-2000%          0.0620       0.0747        0.0564      1.21    
+-3000%          0.0613       0.0742        0.0562      1.21    
+-5000%          0.0594       0.0727        0.0563      1.22    
+
+🎯 KEY INSIGHTS
+----------------------------------------
+• Best performing scenario: +3000% (AP: 0.0626)
+• Worst performing scenario: -5000% (AP: 0.0594)
+• Best improvement over baseline: +0.1%
+• Worst degradation from baseline: -5.0%
+
+💡 METHODOLOGY NOTES
+----------------------------------------
+• Combined AP is the most reliable metric (merges all predictions/targets)
+• Fire-only AP shows performance on fire-active days only
+• Daily Average includes 0 AP from no-fire days (may underestimate performance)
+• Ratio shows how much no-fire days affect the combined score
+
+📁 Detailed data saved to: VIIRS_M11_AP_Analysis.json
