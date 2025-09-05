@@ -1468,7 +1468,7 @@ def main():
     if len(sys.argv) == 1:
         # Default paths for direct execution
         model_path = "best_fire_model_official.pth"
-        fire_event_path = "data/processed/2020/fire_24461899.hdf5"
+        fire_event_path = "data/processed/2020/fire_24332628.hdf5"
         
         if os.path.exists(model_path) and os.path.exists(fire_event_path):
             print("Running simple sensitivity analysis with default paths...")

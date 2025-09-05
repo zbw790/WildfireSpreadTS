@@ -1,0 +1,118 @@
+🔥 FIRE EVENTS COMPREHENSIVE ANALYSIS REPORT
+================================================================================
+
+📊 OVERVIEW
+----------------------------------------
+• Total fire events analyzed: 1821
+• Average duration: 13.5 days
+• Average fire day ratio: 54.8%
+• Max fire duration: 81 days
+
+🏆 TOP 5 BY DURATION (持续时间最长)
+--------------------------------------------------
+1. fire_21889697.hdf5
+   Duration: 81/94 days (86.2%)
+   Max pixels: 702
+   Avg area: 0.49%
+   Score: 24.58
+
+2. fire_21889697.hdf5
+   Duration: 81/94 days (86.2%)
+   Max pixels: 702
+   Avg area: 0.49%
+   Score: 24.58
+
+3. fire_21889697.hdf5
+   Duration: 81/94 days (86.2%)
+   Max pixels: 702
+   Avg area: 0.49%
+   Score: 24.58
+
+4. fire_24332628.hdf5
+   Duration: 67/76 days (88.2%)
+   Max pixels: 6,587
+   Avg area: 1.93%
+   Score: 22.18
+
+5. fire_24332628.hdf5
+   Duration: 67/76 days (88.2%)
+   Max pixels: 6,587
+   Avg area: 1.93%
+   Score: 22.18
+
+🎯 TOP 5 BY REPRESENTATIVENESS (最具代表性)
+--------------------------------------------------
+1. fire_21889697.hdf5
+   Score: 24.58
+   Duration: 81/94 days
+   Max pixels: 702
+   Fire ratio: 86.2%
+
+2. fire_21889697.hdf5
+   Score: 24.58
+   Duration: 81/94 days
+   Max pixels: 702
+   Fire ratio: 86.2%
+
+3. fire_21889697.hdf5
+   Score: 24.58
+   Duration: 81/94 days
+   Max pixels: 702
+   Fire ratio: 86.2%
+
+4. fire_24332628.hdf5
+   Score: 22.18
+   Duration: 67/76 days
+   Max pixels: 6,587
+   Fire ratio: 88.2%
+
+5. fire_24332628.hdf5
+   Score: 22.18
+   Duration: 67/76 days
+   Max pixels: 6,587
+   Fire ratio: 88.2%
+
+🔥 TOP 5 BY INTENSITY (火灾强度最高)
+--------------------------------------------------
+1. fire_24332939.hdf5
+   Max pixels: 9,134
+   Duration: 43 days
+   Avg area: 1.28%
+   Score: 15.48
+
+2. fire_24332939.hdf5
+   Max pixels: 9,134
+   Duration: 43 days
+   Avg area: 1.28%
+   Score: 15.48
+
+3. fire_24332939.hdf5
+   Max pixels: 9,134
+   Duration: 43 days
+   Avg area: 1.28%
+   Score: 15.48
+
+4. fire_24462263.hdf5
+   Max pixels: 9,032
+   Duration: 27 days
+   Avg area: 1.77%
+   Score: 10.82
+
+5. fire_24462263.hdf5
+   Max pixels: 9,032
+   Duration: 27 days
+   Avg area: 1.77%
+   Score: 10.82
+
+📈 RECOMMENDATIONS FOR PRESENTATION
+--------------------------------------------------
+🥇 BEST OVERALL: fire_21889697.hdf5
+   • Representativeness score: 24.58
+   • Duration: 81 days
+   • Fire coverage: 86.2%
+   • Max intensity: 702 pixels
+
+🔥 HIGHEST INTENSITY: fire_24332939.hdf5
+   • Max pixels: 9,134
+   • Score: 15.48
+

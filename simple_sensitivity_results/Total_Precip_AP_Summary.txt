@@ -1,0 +1,55 @@
+🔥 Total_Precip FEATURE SENSITIVITY - AP ANALYSIS REPORT
+================================================================================
+
+📊 GROUND TRUTH DATA DISTRIBUTION
+----------------------------------------
+• Total days analyzed: 26
+• Days with fire: 24 (92.3%)
+• Days without fire: 2 (7.7%)
+
+🔥 FIRE DAYS DETAILS:
+  Day 3: 43 pixels (0.262%)
+  Day 4: 62 pixels (0.378%)
+  Day 5: 849 pixels (5.182%)
+  Day 6: 842 pixels (5.139%)
+  Day 7: 745 pixels (4.547%)
+  Day 8: 600 pixels (3.662%)
+  Day 9: 624 pixels (3.809%)
+  Day 10: 255 pixels (1.556%)
+  Day 11: 530 pixels (3.235%)
+  Day 12: 479 pixels (2.924%)
+  ... and 14 more fire days
+
+📈 AVERAGE PRECISION (AP) ANALYSIS
+----------------------------------------
+Legend:
+• Combined AP: All days merged (RECOMMENDED method)
+• Fire-only AP: Only days with actual fire
+• Daily Average: Average of individual daily APs (includes 0s)
+
+Scenario        Combined AP  Fire-only AP  Daily Avg   Ratio   
+----------------------------------------------------------------------
+-5000%          0.6279       0.6282        0.5966      1.00    
+-3000%          0.6278       0.6281        0.5959      1.00    
+-2000%          0.6278       0.6281        0.5952      1.00    
+Baseline (0%)   0.6277       0.6280        0.5940      1.00    
++3000%          0.6276       0.6279        0.5928      1.00    
+-1000%          0.6276       0.6279        0.5945      1.00    
++1000%          0.6276       0.6279        0.5936      1.00    
++2000%          0.6275       0.6278        0.5932      1.00    
+
+🎯 KEY INSIGHTS
+----------------------------------------
+• Best performing scenario: -5000% (AP: 0.6279)
+• Worst performing scenario: +2000% (AP: 0.6275)
+• Best improvement over baseline: +0.0%
+• Worst degradation from baseline: -0.0%
+
+💡 METHODOLOGY NOTES
+----------------------------------------
+• Combined AP is the most reliable metric (merges all predictions/targets)
+• Fire-only AP shows performance on fire-active days only
+• Daily Average includes 0 AP from no-fire days (may underestimate performance)
+• Ratio shows how much no-fire days affect the combined score
+
+📁 Detailed data saved to: Total_Precip_AP_Analysis.json
