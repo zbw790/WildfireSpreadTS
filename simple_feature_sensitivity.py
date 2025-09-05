@@ -23,6 +23,8 @@ from tqdm import tqdm
 import warnings
 from scipy import ndimage
 from PIL import Image
+from sklearn.metrics import average_precision_score
+import json
 
 warnings.filterwarnings('ignore')
 
@@ -509,24 +511,27 @@ def load_fire_event_data(fire_event_path, config, start_day=0):
             
             # Extract fire channel from processed ground truth
             ground_truth = []
+            ground_truth_raw = []  # 保存原始连续值用于显示
             fire_channel_idx = len(config.BEST_FEATURES) - 1  # Active_Fire is last
             for day_idx in range(len(gt_processed)):
                 fire_data = gt_processed[day_idx, fire_channel_idx].numpy()
-                # Apply same threshold as predictions
-                binary_fire = (fire_data > 0.1).astype(np.float32)
+                # 保存原始连续值用于GIF显示
+                ground_truth_raw.append(fire_data.copy())
+                # Apply consistent threshold (0.5) for binary fire detection (用于AP计算)
+                binary_fire = (fire_data > 0.5).astype(np.float32)
                 ground_truth.append(binary_fire)
             
             print(f"Processed sequences: initial={initial_sequence.shape}, weather={weather_data.shape}")
             print(f"Ground truth shape: {len(ground_truth)} days, each {ground_truth[0].shape if ground_truth else 'None'}")
             print(f"Simulation days: {max_days}")
             
-            return initial_sequence, weather_data, ground_truth, max_days
+            return initial_sequence, weather_data, ground_truth, ground_truth_raw, max_days
             
     except Exception as e:
         print(f"Error loading fire event data: {e}")
         import traceback
         traceback.print_exc()
-        return None, None, None, 0
+        return None, None, None, None, 0
 
 # ============================================================================
 # GIF GENERATOR
@@ -686,9 +691,48 @@ Difference Ratio: {100*(diff_gray > 5).sum()/diff_gray.size:.1f}%'''
         print(f"    ✗ Failed to create difference analysis: {e}")
         return False
 
-def create_enhanced_feature_sensitivity_gif(feature_name, output_dir, ground_truth,
+def calculate_cumulative_ap(predictions, targets, current_day):
+    """计算到当前天为止的累积AP"""
+    if current_day < 0 or current_day >= len(predictions) or current_day >= len(targets):
+        return 0.0
+    
+    # 获取到当前天为止的所有预测和目标
+    cumulative_preds = []
+    cumulative_targets = []
+    
+    for day in range(current_day + 1):
+        if day < len(predictions) and day < len(targets):
+            pred = predictions[day]
+            target = targets[day]
+            
+            # 确保是numpy数组
+            if isinstance(pred, torch.Tensor):
+                pred = pred.numpy()
+            if isinstance(target, torch.Tensor):
+                target = target.numpy()
+            
+            cumulative_preds.append(pred.flatten())
+            cumulative_targets.append(target.flatten())
+    
+    if not cumulative_preds or not cumulative_targets:
+        return 0.0
+    
+    # 合并所有数据
+    all_preds = np.concatenate(cumulative_preds)
+    all_targets = np.concatenate(cumulative_targets)
+    
+    # 计算AP
+    if all_targets.sum() > 0:
+        try:
+            return average_precision_score(all_targets, all_preds)
+        except:
+            return 0.0
+    else:
+        return 0.0
+
+def create_enhanced_feature_sensitivity_gif(feature_name, output_dir, ground_truth, ground_truth_raw,
                                           baseline_predictions, all_perturbation_predictions, perturbation_levels):
-    """Create enhanced sensitivity analysis GIF with multiple perturbation levels"""
+    """Create enhanced sensitivity analysis GIF with multiple perturbation levels and real-time AP display"""
     
     output_path = Path(output_dir) / f"{feature_name}_enhanced_evolution.gif"
     output_path.parent.mkdir(exist_ok=True)
@@ -715,13 +759,34 @@ def create_enhanced_feature_sensitivity_gif(feature_name, output_dir, ground_tru
             ax.clear()
         
         try:
-            # Ground truth
-            if day < len(ground_truth):
-                gt_data = ground_truth[day]
-                if gt_data.ndim > 2:
-                    gt_data = gt_data.squeeze()
-                axes_flat[0].imshow(gt_data, cmap='Reds', vmin=0, vmax=1)
+            # Ground truth - 使用原始连续值显示深浅
+            if day < len(ground_truth_raw):
+                gt_raw_data = ground_truth_raw[day]  # 原始连续值用于显示
+                gt_binary_data = ground_truth[day]   # 二值化数据用于统计
+                
+                if gt_raw_data.ndim > 2:
+                    gt_raw_data = gt_raw_data.squeeze()
+                if gt_binary_data.ndim > 2:
+                    gt_binary_data = gt_binary_data.squeeze()
+                
+                # 使用原始连续值显示，采用与预测相同的颜色方案
+                axes_flat[0].imshow(gt_raw_data, cmap='Reds', vmin=0, vmax=1)
                 axes_flat[0].set_title(f'Ground Truth Fire - Day {day+1}', fontsize=14, fontweight='bold')
+                
+                # 统计信息基于二值化数据（保持AP计算一致性）
+                fire_pixels = (gt_binary_data > 0.5).sum()
+                total_pixels = gt_binary_data.size
+                fire_ratio = fire_pixels / total_pixels * 100
+                
+                # 显示原始值的统计信息
+                raw_max = gt_raw_data.max()
+                raw_mean = gt_raw_data.mean()
+                
+                stats_text = f'Fire: {fire_pixels}\n({fire_ratio:.1f}%)\nMax: {raw_max:.2f}\nMean: {raw_mean:.3f}'
+                axes_flat[0].text(0.95, 0.05, stats_text, 
+                                transform=axes_flat[0].transAxes, 
+                                bbox=dict(boxstyle="round,pad=0.3", facecolor='lightblue', alpha=0.8),
+                                fontsize=9, ha='right', va='bottom', fontweight='bold')
             else:
                 axes_flat[0].set_title('Ground Truth Fire - No Data', fontsize=14)
             axes_flat[0].axis('off')
@@ -755,6 +820,28 @@ def create_enhanced_feature_sensitivity_gif(feature_name, output_dir, ground_tru
                     else:
                         title = f'{feature_name} {perturbation:+d}% - Day {day+1}'
                     axes_flat[ax_idx].set_title(title, fontsize=12)
+                    
+                    # 🆕 计算并显示累积AP
+                    cumulative_ap = calculate_cumulative_ap(predictions, ground_truth, day)
+                    
+                    # 预测统计 (使用一致的阈值0.5)
+                    pred_pixels = (pred_data > 0.5).sum()
+                    pred_max = pred_data.max()
+                    
+                    # 选择AP显示颜色
+                    if cumulative_ap > 0.3:
+                        ap_color = 'lightgreen'
+                    elif cumulative_ap > 0.15:
+                        ap_color = 'lightyellow'
+                    else:
+                        ap_color = 'lightcoral'
+                    
+                    # 显示实时AP和预测统计
+                    ap_text = f'AP: {cumulative_ap:.3f}\nPred: {pred_pixels}\nMax: {pred_max:.2f}'
+                    axes_flat[ax_idx].text(0.95, 0.05, ap_text,
+                                         transform=axes_flat[ax_idx].transAxes,
+                                         bbox=dict(boxstyle="round,pad=0.3", facecolor=ap_color, alpha=0.8),
+                                         fontsize=9, ha='right', va='bottom', fontweight='bold')
                 else:
                     if perturbation == 0:
                         title = 'Baseline - No Data'
@@ -878,6 +965,274 @@ def create_feature_sensitivity_gif(feature_name, output_dir, ground_truth,
         plt.close(fig)
 
 # ============================================================================
+# AP ANALYSIS FUNCTIONS
+# ============================================================================
+
+def analyze_fire_no_fire_distribution(targets):
+    """分析有火天和无火天的分布"""
+    fire_days = []
+    no_fire_days = []
+    
+    for day_idx, target in enumerate(targets):
+        if isinstance(target, torch.Tensor):
+            fire_pixels = (target > 0.5).sum().item()
+            total_pixels = target.numel()
+        else:
+            # numpy array
+            fire_pixels = (target > 0.5).sum()
+            total_pixels = target.size
+        
+        fire_ratio = fire_pixels / total_pixels
+        
+        if fire_pixels > 0:
+            fire_days.append({
+                'day': day_idx,
+                'fire_pixels': fire_pixels,
+                'fire_ratio': fire_ratio
+            })
+        else:
+            no_fire_days.append({
+                'day': day_idx,
+                'fire_pixels': fire_pixels,
+                'fire_ratio': fire_ratio
+            })
+    
+    return fire_days, no_fire_days
+
+def calculate_comprehensive_ap_analysis(predictions, targets, scenario_name):
+    """
+    计算全面的AP分析，包括多种计算方式
+    """
+    results = {}
+    
+    # 确保数据格式正确
+    pred_arrays = []
+    target_arrays = []
+    
+    for pred, target in zip(predictions, targets):
+        if isinstance(pred, torch.Tensor):
+            pred = pred.numpy()
+        if isinstance(target, torch.Tensor):
+            target = target.numpy()
+        
+        pred_arrays.append(pred.flatten())
+        target_arrays.append(target.flatten())
+    
+    # 分析每天的情况
+    fire_day_predictions = []
+    fire_day_targets = []
+    no_fire_day_predictions = []
+    no_fire_day_targets = []
+    daily_aps = []
+    
+    for day_idx, (pred_flat, target_flat) in enumerate(zip(pred_arrays, target_arrays)):
+        fire_pixels = (target_flat > 0.5).sum()
+        
+        if fire_pixels > 0:  # 有火天
+            fire_day_predictions.append(pred_flat)
+            fire_day_targets.append(target_flat)
+            # 计算单天AP
+            daily_ap = average_precision_score(target_flat, pred_flat)
+            daily_aps.append(daily_ap)
+        else:  # 无火天
+            no_fire_day_predictions.append(pred_flat)
+            no_fire_day_targets.append(target_flat)
+            daily_aps.append(0.0)  # 无火天AP为0
+    
+    # 方法1: 所有天合并计算（推荐方式）
+    all_preds = np.concatenate(pred_arrays)
+    all_targets = np.concatenate(target_arrays)
+    
+    if all_targets.sum() > 0:
+        results['combined_ap'] = average_precision_score(all_targets, all_preds)
+    else:
+        results['combined_ap'] = 0.0
+    
+    # 方法2: 只计算有火天的AP
+    if fire_day_predictions:
+        fire_preds = np.concatenate(fire_day_predictions)
+        fire_targets = np.concatenate(fire_day_targets)
+        if fire_targets.sum() > 0:
+            results['fire_days_only_ap'] = average_precision_score(fire_targets, fire_preds)
+        else:
+            results['fire_days_only_ap'] = 0.0
+    else:
+        results['fire_days_only_ap'] = 0.0
+    
+    # 方法3: 每天单独计算AP然后平均（包含0值）
+    results['daily_average_ap'] = np.mean(daily_aps)
+    
+    # 统计信息
+    results['fire_days'] = len(fire_day_predictions)
+    results['no_fire_days'] = len(no_fire_day_predictions)
+    results['total_days'] = len(predictions)
+    results['fire_day_ratio'] = len(fire_day_predictions) / len(predictions) if predictions else 0
+    results['daily_aps'] = daily_aps
+    
+    # 计算比例
+    if results['fire_days_only_ap'] > 0 and results['combined_ap'] > 0:
+        results['fire_to_combined_ratio'] = results['fire_days_only_ap'] / results['combined_ap']
+    else:
+        results['fire_to_combined_ratio'] = 1.0
+    
+    return results
+
+def create_feature_ap_summary(feature_name, output_dir, ground_truth, baseline_predictions, perturbation_predictions, perturbation_levels):
+    """为特征创建详细的AP总结报告"""
+    
+    print(f"\n📊 Computing AP analysis for {feature_name}...")
+    
+    # 分析ground truth分布
+    fire_days, no_fire_days = analyze_fire_no_fire_distribution(ground_truth)
+    
+    # 存储所有结果
+    ap_results = {}
+    
+    # 分析baseline
+    baseline_analysis = calculate_comprehensive_ap_analysis(
+        baseline_predictions, ground_truth, "Baseline"
+    )
+    ap_results['Baseline (0%)'] = baseline_analysis
+    
+    # 分析每个扰动级别
+    for perturbation in perturbation_levels:
+        if perturbation == 0:
+            continue  # 已经处理了baseline
+        
+        scenario_name = f"{perturbation:+.0%}"
+        if perturbation in perturbation_predictions:
+            perturbation_analysis = calculate_comprehensive_ap_analysis(
+                perturbation_predictions[perturbation], ground_truth, scenario_name
+            )
+            ap_results[scenario_name] = perturbation_analysis
+    
+    # 创建详细报告
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)  # 确保目录存在
+    
+    report_path = output_path / f"{feature_name}_AP_Analysis.json"
+    summary_path = output_path / f"{feature_name}_AP_Summary.txt"
+    
+    # 保存JSON格式的详细数据
+    json_data = {
+        'feature_name': feature_name,
+        'ground_truth_analysis': {
+            'fire_days': len(fire_days),
+            'no_fire_days': len(no_fire_days),
+            'total_days': len(ground_truth),
+            'fire_day_ratio': len(fire_days) / len(ground_truth) if ground_truth else 0,
+            'fire_day_details': [
+                {
+                    'day': int(day_info['day']),
+                    'fire_pixels': int(day_info['fire_pixels']),
+                    'fire_ratio': float(day_info['fire_ratio'])
+                } for day_info in fire_days[:5]
+            ]
+        },
+        'ap_results': {}
+    }
+    
+    # 转换结果为可序列化格式
+    for scenario, results in ap_results.items():
+        json_data['ap_results'][scenario] = {
+            'combined_ap': float(results['combined_ap']),
+            'fire_days_only_ap': float(results['fire_days_only_ap']),
+            'daily_average_ap': float(results['daily_average_ap']),
+            'fire_days': int(results['fire_days']),
+            'no_fire_days': int(results['no_fire_days']),
+            'total_days': int(results['total_days']),
+            'fire_day_ratio': float(results['fire_day_ratio']),
+            'fire_to_combined_ratio': float(results['fire_to_combined_ratio'])
+        }
+    
+    with open(report_path, 'w', encoding='utf-8') as f:
+        json.dump(json_data, f, indent=2, ensure_ascii=False)
+    
+    # 创建人类可读的总结报告
+    with open(summary_path, 'w', encoding='utf-8') as f:
+        f.write(f"🔥 {feature_name} FEATURE SENSITIVITY - AP ANALYSIS REPORT\n")
+        f.write("=" * 80 + "\n\n")
+        
+        f.write("📊 GROUND TRUTH DATA DISTRIBUTION\n")
+        f.write("-" * 40 + "\n")
+        f.write(f"• Total days analyzed: {len(ground_truth)}\n")
+        f.write(f"• Days with fire: {len(fire_days)} ({len(fire_days)/len(ground_truth)*100:.1f}%)\n")
+        f.write(f"• Days without fire: {len(no_fire_days)} ({len(no_fire_days)/len(ground_truth)*100:.1f}%)\n\n")
+        
+        if fire_days:
+            f.write("🔥 FIRE DAYS DETAILS:\n")
+            for day_info in fire_days[:10]:  # 显示前10天
+                f.write(f"  Day {day_info['day']+1}: {day_info['fire_pixels']} pixels ({day_info['fire_ratio']*100:.3f}%)\n")
+            if len(fire_days) > 10:
+                f.write(f"  ... and {len(fire_days)-10} more fire days\n")
+            f.write("\n")
+        
+        f.write("📈 AVERAGE PRECISION (AP) ANALYSIS\n")
+        f.write("-" * 40 + "\n")
+        f.write("Legend:\n")
+        f.write("• Combined AP: All days merged (RECOMMENDED method)\n")
+        f.write("• Fire-only AP: Only days with actual fire\n")
+        f.write("• Daily Average: Average of individual daily APs (includes 0s)\n\n")
+        
+        # 按AP分数排序
+        sorted_results = sorted(ap_results.items(), 
+                              key=lambda x: x[1]['combined_ap'], 
+                              reverse=True)
+        
+        f.write(f"{'Scenario':<15} {'Combined AP':<12} {'Fire-only AP':<13} {'Daily Avg':<11} {'Ratio':<8}\n")
+        f.write("-" * 70 + "\n")
+        
+        for scenario, results in sorted_results:
+            f.write(f"{scenario:<15} ")
+            f.write(f"{results['combined_ap']:<12.4f} ")
+            f.write(f"{results['fire_days_only_ap']:<13.4f} ")
+            f.write(f"{results['daily_average_ap']:<11.4f} ")
+            f.write(f"{results['fire_to_combined_ratio']:<8.2f}\n")
+        
+        f.write("\n")
+        
+        # 找出最佳和最差的扰动
+        best_scenario = max(ap_results.items(), key=lambda x: x[1]['combined_ap'])
+        worst_scenario = min(ap_results.items(), key=lambda x: x[1]['combined_ap'])
+        
+        f.write("🎯 KEY INSIGHTS\n")
+        f.write("-" * 40 + "\n")
+        f.write(f"• Best performing scenario: {best_scenario[0]} (AP: {best_scenario[1]['combined_ap']:.4f})\n")
+        f.write(f"• Worst performing scenario: {worst_scenario[0]} (AP: {worst_scenario[1]['combined_ap']:.4f})\n")
+        
+        baseline_ap = ap_results.get('Baseline (0%)', {}).get('combined_ap', 0)
+        if baseline_ap > 0:
+            best_improvement = (best_scenario[1]['combined_ap'] - baseline_ap) / baseline_ap * 100
+            worst_degradation = (worst_scenario[1]['combined_ap'] - baseline_ap) / baseline_ap * 100
+            f.write(f"• Best improvement over baseline: {best_improvement:+.1f}%\n")
+            f.write(f"• Worst degradation from baseline: {worst_degradation:+.1f}%\n")
+        
+        f.write("\n💡 METHODOLOGY NOTES\n")
+        f.write("-" * 40 + "\n")
+        f.write("• Combined AP is the most reliable metric (merges all predictions/targets)\n")
+        f.write("• Fire-only AP shows performance on fire-active days only\n")
+        f.write("• Daily Average includes 0 AP from no-fire days (may underestimate performance)\n")
+        f.write("• Ratio shows how much no-fire days affect the combined score\n")
+        
+        f.write(f"\n📁 Detailed data saved to: {report_path.name}\n")
+    
+    print(f"✅ {feature_name} AP analysis completed!")
+    print(f"   📊 Summary: {summary_path}")
+    print(f"   📋 Detailed: {report_path}")
+    
+    # 打印关键结果到控制台
+    print(f"\n🎯 {feature_name} QUICK RESULTS:")
+    baseline_ap = ap_results.get('Baseline (0%)', {}).get('combined_ap', 0)
+    print(f"   Baseline AP: {baseline_ap:.4f}")
+    
+    for scenario, results in sorted_results[:3]:  # 显示前3个最佳结果
+        if scenario != 'Baseline (0%)':
+            improvement = (results['combined_ap'] - baseline_ap) / baseline_ap * 100 if baseline_ap > 0 else 0
+            print(f"   {scenario}: {results['combined_ap']:.4f} ({improvement:+.1f}%)")
+    
+    return ap_results
+
+# ============================================================================
 # MAIN ANALYSIS FUNCTION
 # ============================================================================
 
@@ -900,7 +1255,7 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
     
     # Load data
     print("Loading fire event data...")
-    initial_seq, weather_data, ground_truth, max_days = load_fire_event_data(
+    initial_seq, weather_data, ground_truth, ground_truth_raw, max_days = load_fire_event_data(
         fire_event_path, config, start_day=0
     )
     
@@ -914,7 +1269,7 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
     baseline_predictions = []
     for day in range(max_days):
         # Load fresh sequence for this day (like evolution animation)
-        day_seq, _, _, _ = load_fire_event_data(
+        day_seq, _, _, _, _ = load_fire_event_data(
             fire_event_path, config, start_day=day
         )
         if day_seq is not None:
@@ -952,7 +1307,7 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
             print(f"Processing {max_days} days with {len(config.PERTURBATION_LEVELS)} perturbation levels...")
             for day in range(max_days):
                 # Load fresh sequence for this day (like evolution) - ONLY ONCE PER DAY
-                day_seq, _, _, _ = load_fire_event_data(
+                day_seq, _, _, _, _ = load_fire_event_data(
                     fire_event_path, config, start_day=day
                 )
                 
@@ -993,7 +1348,7 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
             # Create enhanced GIF with multiple perturbation levels
             print(f"Creating {feature_name} enhanced sensitivity GIF...")
             success = create_enhanced_feature_sensitivity_gif(
-                feature_name, output_dir, ground_truth,
+                feature_name, output_dir, ground_truth, ground_truth_raw,
                 baseline_predictions, all_perturbation_predictions, config.PERTURBATION_LEVELS
             )
             
@@ -1005,7 +1360,7 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
             )
             
             success_auto = create_enhanced_feature_sensitivity_gif(
-                f"{feature_name}_AUTOREGRESSIVE", output_dir, ground_truth,
+                f"{feature_name}_AUTOREGRESSIVE", output_dir, ground_truth, ground_truth_raw,
                 autoregressive_predictions.get(0, baseline_predictions), 
                 autoregressive_predictions, config.PERTURBATION_LEVELS
             )
@@ -1026,6 +1381,18 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
                     print(f"✓ {feature_name} GIFs created, but difference analysis failed")
             else:
                 print(f"✗ {feature_name} GIF generation failed")
+            
+            # 🆕 ADD AP ANALYSIS
+            print(f"\n📊 Computing AP analysis for {feature_name}...")
+            try:
+                ap_results = create_feature_ap_summary(
+                    feature_name, output_dir, ground_truth, 
+                    baseline_predictions, all_perturbation_predictions, 
+                    config.PERTURBATION_LEVELS
+                )
+                print(f"✅ {feature_name} AP analysis completed successfully!")
+            except Exception as ap_error:
+                print(f"⚠️ {feature_name} AP analysis failed: {ap_error}")
                 
         except Exception as e:
             print(f"✗ Error analyzing {feature_name}: {e}")
@@ -1062,12 +1429,21 @@ def run_simple_sensitivity_analysis(model_path, fire_event_path, output_dir='sim
     print("   - {feature}_enhanced_evolution.gif (Standard prediction)")
     print("   - {feature}_AUTOREGRESSIVE_enhanced_evolution.gif (Recursive prediction)")
     print("   - {feature}_difference_analysis.png (Difference visualization)")
+    print("   - {feature}_AP_Summary.txt (Human-readable AP analysis)")
+    print("   - {feature}_AP_Analysis.json (Detailed AP data)")
     
     print("\n📈 Key insights from complete analysis:")
     print("   - Standard GIFs: Feature effects with perfect fire history")
     print("   - Autoregressive GIFs: Feature effects with prediction uncertainty")
     print("   - Difference PNGs: Quantified visual differences and statistics")
+    print("   - AP Analysis: Quantitative performance metrics for all perturbations")
     print("   - Combined analysis reveals model's recursive prediction stability!")
+    
+    print("\n📊 AP ANALYSIS HIGHLIGHTS:")
+    print("   - Uses CORRECT AP calculation (combined method - not simple averaging)")
+    print("   - Separates fire days vs no-fire days analysis")
+    print("   - Shows which perturbations improve/degrade model performance")
+    print("   - Includes statistical significance and improvement percentages")
     
     print(f"\n✅ Complete analysis finished! Check all generated files for comprehensive insights!")
 

@@ -29,7 +29,7 @@ class WildFireConfig:
 class FirePredictionConfig:
     pass
 
-# Register classes for safe loading
+# Register compatibility classes for model loading
 import sys
 sys.modules[__name__].WildFireConfig = WildFireConfig
 sys.modules[__name__].FirePredictionConfig = FirePredictionConfig
@@ -37,7 +37,7 @@ sys.modules[__name__].FirePredictionConfig = FirePredictionConfig
 # Import from your existing code
 import sys
 sys.path.append('.')
-from simple_feature_sensitivity import load_fire_event_data, SimpleConfig
+from simple_feature_sensitivity import load_fire_event_data
 
 class QuickBaselines:
     def __init__(self, config):
@@ -125,23 +125,166 @@ class QuickBaselines:
             pred = model(test_input)
             return pred.cpu().numpy().squeeze()
 
-def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.hdf5"):
+def analyze_fire_no_fire_distribution(test_targets):
     """
-    Run all baseline models and compare performance
+    详细分析测试数据中有火天和无火天的分布
     """
-    print("🔥 QUICK BASELINE COMPARISON")
+    print("\n🔍 FIRE/NO-FIRE DAY ANALYSIS")
     print("="*50)
     
+    fire_days = []
+    no_fire_days = []
+    
+    for day_idx, target in enumerate(test_targets):
+        fire_pixels = (target > 0.5).sum().item()
+        total_pixels = target.numel()
+        fire_ratio = fire_pixels / total_pixels
+        
+        if fire_pixels > 0:
+            fire_days.append({
+                'day': day_idx,
+                'fire_pixels': fire_pixels,
+                'fire_ratio': fire_ratio
+            })
+        else:
+            no_fire_days.append({
+                'day': day_idx,
+                'fire_pixels': fire_pixels,
+                'fire_ratio': fire_ratio
+            })
+    
+    print(f"📊 Data Distribution:")
+    print(f"  • Fire days: {len(fire_days)}")
+    print(f"  • No-fire days: {len(no_fire_days)}")
+    print(f"  • Total days: {len(test_targets)}")
+    if len(test_targets) > 0:
+        print(f"  • Fire day ratio: {len(fire_days)/len(test_targets)*100:.1f}%")
+    else:
+        print(f"  • Fire day ratio: N/A (no test data)")
+    
+    if fire_days:
+        print(f"\n🔥 Fire Days Details:")
+        for day_info in fire_days:
+            print(f"  Day {day_info['day']}: {day_info['fire_pixels']} pixels ({day_info['fire_ratio']*100:.3f}%)")
+    
+    if no_fire_days:
+        print(f"\n❄️ No-Fire Days: {len(no_fire_days)} days")
+    
+    return len(fire_days), len(no_fire_days)
+
+def calculate_fair_ap_with_analysis(predictions, targets, model_name):
+    """
+    计算AP并提供详细分析，特别关注有火天和无火天的影响
+    """
+    print(f"\n📊 AP Analysis for {model_name}")
+    print("-" * 30)
+    
+    # 分析每天的情况
+    daily_results = []
+    fire_day_predictions = []
+    fire_day_targets = []
+    no_fire_day_predictions = []
+    no_fire_day_targets = []
+    
+    for day_idx, (pred, target) in enumerate(zip(predictions, targets)):
+        fire_pixels = (target > 0.5).sum().item()
+        pred_flat = pred.flatten()
+        target_flat = target.flatten()
+        
+        if fire_pixels > 0:  # 有火天
+            fire_day_predictions.append(pred_flat)
+            fire_day_targets.append(target_flat)
+            daily_results.append({
+                'day': day_idx,
+                'type': 'fire',
+                'fire_pixels': fire_pixels,
+                'pred_mean': pred_flat.mean(),
+                'pred_max': pred_flat.max()
+            })
+        else:  # 无火天
+            no_fire_day_predictions.append(pred_flat)
+            no_fire_day_targets.append(target_flat)
+            daily_results.append({
+                'day': day_idx,
+                'type': 'no_fire',
+                'fire_pixels': fire_pixels,
+                'pred_mean': pred_flat.mean(),
+                'pred_max': pred_flat.max()
+            })
+    
+    # 计算不同方式的AP
+    results = {}
+    
+    # 方法1: 所有天合并计算（当前使用的方法）
+    all_preds = np.concatenate([p.flatten() for p in predictions])
+    all_targets = np.concatenate([t.flatten() for t in targets])
+    
+    if all_targets.sum() > 0:
+        results['combined_ap'] = average_precision_score(all_targets, all_preds)
+    else:
+        results['combined_ap'] = 0.0
+    
+    # 方法2: 只计算有火天的AP
+    if fire_day_predictions:
+        fire_preds = np.concatenate(fire_day_predictions)
+        fire_targets = np.concatenate(fire_day_targets)
+        if fire_targets.sum() > 0:
+            results['fire_days_only_ap'] = average_precision_score(fire_targets, fire_preds)
+        else:
+            results['fire_days_only_ap'] = 0.0
+    else:
+        results['fire_days_only_ap'] = 0.0
+    
+    # 方法3: 每天单独计算AP然后平均（包含0值）
+    daily_aps = []
+    for day_idx, (pred, target) in enumerate(zip(predictions, targets)):
+        pred_flat = pred.flatten()
+        target_flat = target.flatten()
+        
+        if target_flat.sum() > 0:
+            daily_ap = average_precision_score(target_flat, pred_flat)
+        else:
+            daily_ap = 0.0  # 无火天设为0
+        daily_aps.append(daily_ap)
+    
+    results['daily_average_ap'] = np.mean(daily_aps)
+    
+    # 打印详细分析
+    print(f"  🔥 Fire days: {len(fire_day_predictions)}")
+    print(f"  ❄️ No-fire days: {len(no_fire_day_predictions)}")
+    print(f"")
+    print(f"  📈 AP Calculation Methods:")
+    print(f"    Combined (all days): {results['combined_ap']:.4f}")
+    print(f"    Fire days only:      {results['fire_days_only_ap']:.4f}")
+    print(f"    Daily average:       {results['daily_average_ap']:.4f}")
+    
+    if results['fire_days_only_ap'] > 0 and results['combined_ap'] > 0:
+        ratio = results['fire_days_only_ap'] / results['combined_ap']
+        print(f"    Fire-only vs Combined: {ratio:.2f}x")
+    
+    return results['combined_ap'], results
+
+def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.hdf5"):
+    """
+    Run all baseline models and compare performance using multiple days for fair evaluation
+    """
+    print("🔥 QUICK BASELINE COMPARISON - MULTI-DAY EVALUATION")
+    print("="*50)
+    
+    # Import SimpleConfig here to avoid conflicts
+    from simple_feature_sensitivity import SimpleConfig
     config = SimpleConfig()
     baselines = QuickBaselines(config)
     
-    # Load data for multiple days to create train/test split
-    print("Loading fire event data...")
+    # Load data for multiple days - use more days for fairer evaluation
+    print("Loading fire event data for multi-day evaluation...")
     all_sequences = []
     all_targets = []
+    test_sequences = []
+    test_targets = []
     
-    # Load multiple days as training data
-    for day in range(5):  # Use first 5 days as training
+    # Load first 5 days as training data
+    for day in range(5):
         try:
             seq, _, gt, _ = load_fire_event_data(fire_event_path, config, start_day=day)
             if len(gt) > 0:
@@ -150,12 +293,35 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
         except:
             break
     
-    # Use day 6 as test
-    test_seq, _, test_gt, _ = load_fire_event_data(fire_event_path, config, start_day=6)
-    test_target = torch.tensor(test_gt[0], dtype=torch.float32) if len(test_gt) > 0 else torch.zeros(config.SPATIAL_SIZE)
+    # Load multiple test days (6-15) for fair evaluation
+    print("Loading multiple test days for comprehensive evaluation...")
+    for day in range(6, 16):  # Use days 6-15 as test (10 days)
+        try:
+            seq, _, gt, _ = load_fire_event_data(fire_event_path, config, start_day=day)
+            if len(gt) > 0:
+                test_sequences.append(seq)
+                test_targets.append(torch.tensor(gt[0], dtype=torch.float32))
+        except:
+            break
+    
+    if len(test_sequences) == 0:
+        print("No valid test sequences found, using single day")
+        test_seq, _, test_gt, _ = load_fire_event_data(fire_event_path, config, start_day=6)
+        if test_seq is not None:
+            test_sequences = [test_seq]
+            if len(test_gt) > 0:
+                test_targets = [torch.tensor(test_gt[0], dtype=torch.float32)]
+            else:
+                test_targets = [torch.zeros(config.SPATIAL_SIZE)]
+        else:
+            print("Failed to load any test data")
+            return
     
     print(f"Training data: {len(all_sequences)} sequences")
-    print(f"Test target shape: {test_target.shape}")
+    print(f"Test data: {len(test_sequences)} sequences")
+    
+    # Analyze fire/no-fire distribution
+    fire_days, no_fire_days = analyze_fire_no_fire_distribution(test_targets)
     
     # Store results
     results = {}
@@ -163,32 +329,51 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
     # 1. Persistence Model
     print("\n1. PERSISTENCE MODEL")
     start_time = time.time()
-    persistence_pred = baselines.persistence_model(test_seq)
+    
+    # Predict on all test days
+    all_persistence_preds = []
+    for test_seq in test_sequences:
+        pred = baselines.persistence_model(test_seq)
+        all_persistence_preds.append(pred)
+    
     persistence_time = time.time() - start_time
     
-    # Calculate metrics
-    persistence_ap = average_precision_score(test_target.flatten(), persistence_pred.flatten())
+    # Calculate AP with detailed analysis
+    persistence_ap, persistence_analysis = calculate_fair_ap_with_analysis(
+        all_persistence_preds, test_targets, "Persistence"
+    )
+    
     results['Persistence'] = {
-        'prediction': persistence_pred,
+        'predictions': all_persistence_preds,
         'ap_score': persistence_ap,
-        'time': persistence_time
+        'time': persistence_time,
+        'analysis': persistence_analysis
     }
-    print(f"  ✓ AP Score: {persistence_ap:.4f}")
     print(f"  ✓ Time: {persistence_time:.4f}s")
     
     # 2. Mean Baseline
     print("\n2. MEAN BASELINE")
     start_time = time.time()
     try:
-        mean_pred = baselines.mean_baseline(all_sequences, all_targets, test_seq)
+        # Predict on all test days
+        all_mean_preds = []
+        for test_seq in test_sequences:
+            pred = baselines.mean_baseline(all_sequences, all_targets, test_seq)
+            all_mean_preds.append(pred)
+        
         mean_time = time.time() - start_time
-        mean_ap = average_precision_score(test_target.flatten(), mean_pred.flatten())
+        
+        # Calculate AP with detailed analysis
+        mean_ap, mean_analysis = calculate_fair_ap_with_analysis(
+            all_mean_preds, test_targets, "Mean Baseline"
+        )
+            
         results['Mean'] = {
-            'prediction': mean_pred,
+            'predictions': all_mean_preds,
             'ap_score': mean_ap,
-            'time': mean_time
+            'time': mean_time,
+            'analysis': mean_analysis
         }
-        print(f"  ✓ AP Score: {mean_ap:.4f}")
         print(f"  ✓ Time: {mean_time:.4f}s")
     except Exception as e:
         print(f"  ✗ Mean baseline failed: {e}")
@@ -198,15 +383,25 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
     print("\n3. SIMPLE CNN")
     start_time = time.time()
     try:
-        cnn_pred = baselines.simple_cnn_model(all_sequences, all_targets, test_seq)
+        # Predict on all test days
+        all_cnn_preds = []
+        for test_seq in test_sequences:
+            pred = baselines.simple_cnn_model(all_sequences, all_targets, test_seq)
+            all_cnn_preds.append(pred)
+        
         cnn_time = time.time() - start_time
-        cnn_ap = average_precision_score(test_target.flatten(), cnn_pred.flatten())
+        
+        # Calculate AP with detailed analysis
+        cnn_ap, cnn_analysis = calculate_fair_ap_with_analysis(
+            all_cnn_preds, test_targets, "Simple CNN"
+        )
+            
         results['SimpleCNN'] = {
-            'prediction': cnn_pred,
+            'predictions': all_cnn_preds,
             'ap_score': cnn_ap,
-            'time': cnn_time
+            'time': cnn_time,
+            'analysis': cnn_analysis
         }
-        print(f"  ✓ AP Score: {cnn_ap:.4f}")
         print(f"  ✓ Time: {cnn_time:.2f}s")
     except Exception as e:
         print(f"  ✗ Simple CNN failed: {e}")
@@ -216,33 +411,65 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
     print("\n4. MAIN UNET MODEL")
     start_time = time.time()
     try:
-        from simple_feature_sensitivity import load_model_with_compatibility, SimpleFireSimulator
+        # Use the exact same method as simple_feature_sensitivity.py
+        from simple_feature_sensitivity import load_model_with_compatibility, SimpleFireSimulator, SimpleConfig
         
-        # Load main model
-        model = load_model_with_compatibility('best_fire_model_official.pth', 13, 5, baselines.device)
-        simulator = SimpleFireSimulator(model, config, baselines.device)
+        # Create config exactly like simple_feature_sensitivity
+        main_config = SimpleConfig()
         
-        # Predict with main model
-        main_pred = simulator.predict_single_step(test_seq.unsqueeze(0), debug=False)
-        main_time = time.time() - start_time
-        main_pred_np = main_pred.numpy().squeeze()
-        main_ap = average_precision_score(test_target.flatten(), main_pred_np.flatten())
+        print("Loading model using simple_feature_sensitivity method...")
+        # Load model with exact same parameters as simple_feature_sensitivity
+        model = load_model_with_compatibility(
+            'best_fire_model_official.pth', 
+            len(main_config.BEST_FEATURES),  # 13 features
+            main_config.SEQUENCE_LENGTH,     # 5 sequence length
+            baselines.device
+        )
         
-        results['Main UNet'] = {
-            'prediction': main_pred_np,
-            'ap_score': main_ap,
-            'time': main_time
-        }
-        print(f"  ✓ AP Score: {main_ap:.4f}")
-        print(f"  ✓ Time: {main_time:.2f}s")
-        print(f"  🚀 {main_ap/max(r['ap_score'] for r in results.values() if r is not None and 'Main' not in r):.1f}x better than best baseline!")
+        if model is None:
+            print("Failed to load model")
+            results['Main UNet'] = None
+        else:
+            # Initialize simulator exactly like simple_feature_sensitivity
+            simulator = SimpleFireSimulator(model, main_config, baselines.device)
+            
+            # Predict on all test days
+            all_main_preds = []
+            for test_seq in test_sequences:
+                pred = simulator.predict_single_step(test_seq.unsqueeze(0), debug=False)
+                all_main_preds.append(pred.numpy().squeeze())
+            
+            main_time = time.time() - start_time
+            
+            # Calculate AP with detailed analysis
+            main_ap, main_analysis = calculate_fair_ap_with_analysis(
+                all_main_preds, test_targets, "Main UNet"
+            )
+            
+            results['Main UNet'] = {
+                'predictions': all_main_preds,
+                'ap_score': main_ap,
+                'time': main_time,
+                'analysis': main_analysis
+            }
+            print(f"  ✓ Time: {main_time:.2f}s")
+        
+        # Calculate improvement over best baseline
+        baseline_aps = [r['ap_score'] for r in results.values() if r is not None and 'Main' not in str(r)]
+        if baseline_aps:
+            best_baseline_ap = max(baseline_aps)
+            if best_baseline_ap > 0:
+                improvement = main_ap / best_baseline_ap
+                print(f"  🚀 {improvement:.1f}x better than best baseline!")
         
     except Exception as e:
         print(f"  ✗ Main UNet failed: {e}")
         results['Main UNet'] = None
     
     # Create comparison visualization (now including main model)
-    create_baseline_comparison_plot(results, test_target)
+    # Use first test target for visualization
+    first_test_target = test_targets[0] if len(test_targets) > 0 else torch.zeros(config.SPATIAL_SIZE)
+    create_baseline_comparison_plot(results, first_test_target)
     
     # Print summary
     print("\n" + "="*50)
@@ -299,7 +526,14 @@ def create_baseline_comparison_plot(results, ground_truth):
         if i + 1 >= cols * rows // 2:  # Skip if we run out of space
             break
             
-        pred = result['prediction']
+        # Handle both old (single prediction) and new (multiple predictions) format
+        if 'prediction' in result:
+            pred = result['prediction']  # Old format
+        elif 'predictions' in result and len(result['predictions']) > 0:
+            pred = result['predictions'][0]  # New format - use first prediction for visualization
+        else:
+            continue  # Skip if no valid prediction
+            
         ap_score = result['ap_score']
         time_taken = result['time']
         
