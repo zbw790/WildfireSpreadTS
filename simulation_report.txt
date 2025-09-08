@@ -4,32 +4,32 @@ WILDFIRE SPREAD SIMULATION - COMPLETE EVOLUTION ANALYSIS
 
 Model Information:
 - Model Path: best_fire_model_official.pth
-- Analysis Date: 2025-09-03
-- Fire Event: fire_24461899.hdf5
-- Time Windows Analyzed: 25
+- Analysis Date: 2025-09-08
+- Fire Event: fire_24332628.hdf5
+- Time Windows Analyzed: 70
 
 EVOLUTION SUMMARY:
 ================
-Duration: Day 0 to Day 24
+Duration: Day 0 to Day 69
 Accuracy Trend: declining
-Mean Accuracy: 0.0368 IoU
-Fire Growth Rate: 0.00 pixels/day
-Peak Fire Activity: Day 9
+Mean Accuracy: 0.3786 IoU
+Fire Growth Rate: 0.04 pixels/day
+Peak Fire Activity: Day 28
 
 TEMPORAL ANALYSIS:
 =================
 1. Model Performance:
    - declining accuracy trend
-   - Best predictions on day 9
-   - Mean accuracy: 0.0368
+   - Best predictions on day 16
+   - Mean accuracy: 0.3786
 
 2. Environmental Correlations:
-   - Temperature-accuracy correlation: -0.281
+   - Temperature-accuracy correlation: 0.205
    - Environmental conditions influence prediction quality
    - Fire behavior complexity varies with weather
 
 3. Fire Spread Patterns:
-   - Growth rate: 0.00 pixels/day
+   - Growth rate: 0.04 pixels/day
    - Peak activity identified in evolution
    - Spatial spread patterns captured
 
@@ -42,7 +42,7 @@ OUTPUTS GENERATED:
 
 CAPABILITIES DEMONSTRATED:
 ========================
-- Complete fire event tracking over 25 time periods
+- Complete fire event tracking over 70 time periods
 - Environmental condition integration
 - Temporal pattern recognition
 - Fire spread direction and distance prediction
