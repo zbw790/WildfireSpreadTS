@@ -1146,7 +1146,7 @@ class YearlyCrossValidator:
         
         # Train model
         trainer = OfficialFireTrainer(model, self.config)
-        best_ap = trainer.train_model(train_loader, val_loader, epochs=20)
+        best_ap = trainer.train_model(train_loader, val_loader, epochs=10)
         
         # Evaluate on test set
         test_loss, test_ap, test_dice = trainer.validate(test_loader)

@@ -47,82 +47,187 @@ class QuickBaselines:
     
     def persistence_model(self, sequence):
         """
-        Persistence Model: Tomorrow's fire = Today's fire
-        The simplest possible baseline!
+        Enhanced Persistence Model: Tomorrow's fire = Today's fire with decay and smoothing
         """
         # Use the last frame's fire channel as prediction
         last_frame = sequence[-1]  # [features, h, w]
         fire_channel = last_frame[-1]  # Active_Fire is the last feature
-        return fire_channel.numpy()
+        
+        # Apply some fire physics: decay + spatial smoothing
+        prediction = fire_channel.numpy()
+        
+        # 1. Apply fire decay (fires naturally diminish)
+        prediction = prediction * 0.85  # 15% decay rate
+        
+        # 2. Add spatial spreading (fires can spread to neighbors)
+        from scipy import ndimage
+        # Slight expansion with Gaussian kernel
+        prediction = ndimage.gaussian_filter(prediction, sigma=0.8, mode='constant')
+        
+        # 3. Apply threshold to maintain fire intensity
+        prediction = np.where(prediction > 0.1, prediction * 1.2, prediction)
+        
+        # 4. Clip to valid range
+        prediction = np.clip(prediction, 0, 1)
+        
+        return prediction
     
-    def mean_baseline(self, train_sequences, train_targets, test_sequence):
+    def linear_regression_model(self, train_sequences, train_targets, test_sequence):
         """
-        Mean Baseline: Predict the average fire probability from training data
+        Enhanced Linear Model: Logistic Regression with key features only
         """
-        print("  Computing Mean Baseline...")
+        print("  Training Enhanced Linear Model...")
         
-        # Calculate mean fire probability from training targets
-        all_targets = torch.stack(train_targets)
-        mean_fire_prob = all_targets.mean().item()
+        # Use only the most important features to avoid memory issues
+        # Focus on: NDVI, EVI2, VIIRS_M11, Max_Temp, Min_Temp, Fire
+        key_features = [3, 4, 0, 8, 9, -1]  # NDVI, EVI2, VIIRS_M11, temps, fire
         
-        print(f"    Mean fire probability: {mean_fire_prob:.4f}")
+        # Prepare training data (sample to avoid memory issues)
+        n_samples = min(1000, len(train_sequences))  # Limit samples
+        sampled_indices = np.random.choice(len(train_sequences), n_samples, replace=False)
         
-        # Return constant prediction
-        return np.full(self.config.SPATIAL_SIZE, mean_fire_prob)
+        X_train = []
+        y_train = []
+        
+        for idx in sampled_indices:
+            seq = train_sequences[idx]
+            target = train_targets[idx]
+            
+            # Use last frame, selected features
+            last_frame = seq[-1][key_features]  # [key_features, h, w]
+            
+            # Sample pixels (not all pixels to avoid memory issues)
+            h, w = last_frame.shape[1], last_frame.shape[2]
+            n_pixels = min(1000, h * w)  # Sample max 1000 pixels per image
+            pixel_indices = np.random.choice(h * w, n_pixels, replace=False)
+            
+            # Flatten and sample
+            X_sample = last_frame.view(len(key_features), -1)[:, pixel_indices].T  # [n_pixels, features]
+            y_sample = target.view(-1)[pixel_indices]  # [n_pixels]
+            
+            X_train.append(X_sample.numpy())
+            y_train.append((y_sample > 0.5).float().numpy())
+        
+        # Combine all training data
+        X_train = np.vstack(X_train)
+        y_train = np.hstack(y_train)
+        
+        print(f"    Training on {X_train.shape[0]} pixel samples")
+        print(f"    Positive rate: {y_train.mean():.4f}")
+        
+        # Train logistic regression with balanced class weights
+        model = LogisticRegression(
+            class_weight='balanced',  # Handle imbalance
+            max_iter=100,  # Quick training
+            random_state=42
+        )
+        model.fit(X_train, y_train)
+        
+        # Predict on test sequence
+        test_last_frame = test_sequence[-1][key_features]  # [key_features, h, w]
+        h, w = test_last_frame.shape[1], test_last_frame.shape[2]
+        
+        # Reshape for prediction
+        X_test = test_last_frame.view(len(key_features), -1).T.numpy()  # [h*w, features]
+        
+        # Predict probabilities
+        pred_probs = model.predict_proba(X_test)[:, 1]  # Get positive class probabilities
+        
+        # Reshape back to spatial format
+        prediction = pred_probs.reshape(h, w)
+        
+        print(f"    Prediction range: [{prediction.min():.4f}, {prediction.max():.4f}]")
+        
+        return prediction
     
     def simple_cnn_model(self, train_sequences, train_targets, test_sequence):
         """
-        Simple 2-layer CNN (only uses last frame)
+        Enhanced Simple CNN with better architecture and training
         """
-        print("  Training Simple CNN...")
+        print("  Training Enhanced Simple CNN...")
         
-        class SimpleCNN(nn.Module):
+        class EnhancedSimpleCNN(nn.Module):
             def __init__(self, in_channels):
                 super().__init__()
-                self.conv1 = nn.Conv2d(in_channels, 32, 3, padding=1)
-                self.conv2 = nn.Conv2d(32, 16, 3, padding=1)
-                self.conv3 = nn.Conv2d(16, 1, 3, padding=1)
-                self.dropout = nn.Dropout2d(0.2)
+                # More sophisticated architecture
+                self.conv1 = nn.Conv2d(in_channels, 64, 5, padding=2)  # Larger kernel
+                self.bn1 = nn.BatchNorm2d(64)
+                self.conv2 = nn.Conv2d(64, 32, 3, padding=1)
+                self.bn2 = nn.BatchNorm2d(32)
+                self.conv3 = nn.Conv2d(32, 16, 3, padding=1)
+                self.bn3 = nn.BatchNorm2d(16)
+                self.conv4 = nn.Conv2d(16, 1, 1)  # 1x1 conv for final prediction
+                self.dropout = nn.Dropout2d(0.3)
             
             def forward(self, x):
                 # Only use the last frame
                 x = x[:, -1]  # [batch, features, h, w]
-                x = F.relu(self.conv1(x))
+                
+                # First conv block
+                x = F.relu(self.bn1(self.conv1(x)))
                 x = self.dropout(x)
-                x = F.relu(self.conv2(x))
-                x = torch.sigmoid(self.conv3(x))
+                
+                # Second conv block
+                x = F.relu(self.bn2(self.conv2(x)))
+                x = self.dropout(x)
+                
+                # Third conv block
+                x = F.relu(self.bn3(self.conv3(x)))
+                
+                # Final prediction
+                x = torch.sigmoid(self.conv4(x))
                 return x.squeeze(1)
         
         # Create model
-        model = SimpleCNN(len(self.config.BEST_FEATURES)).to(self.device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-        criterion = nn.BCELoss()
+        model = EnhancedSimpleCNN(len(self.config.BEST_FEATURES)).to(self.device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
         
-        # Quick training (just a few epochs)
+        # Use weighted BCE loss to handle class imbalance
+        pos_weight = torch.tensor([10.0]).to(self.device)  # Weight positive class more
+        criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+        
+        # Better training with more epochs and validation
         model.train()
-        for epoch in range(5):  # Very quick training
+        n_batches = min(20, len(train_sequences))  # Use more batches
+        
+        for epoch in range(10):  # More training epochs
             total_loss = 0
-            n_batches = min(10, len(train_sequences))  # Use subset for speed
-            for seq, target in zip(train_sequences[:n_batches], train_targets[:n_batches]):
-                seq = seq.unsqueeze(0).to(self.device)
-                target = target.unsqueeze(0).to(self.device)  # Add batch dimension
+            n_processed = 0
+            
+            # Shuffle training data
+            indices = np.random.permutation(len(train_sequences))[:n_batches]
+            
+            for idx in indices:
+                seq = train_sequences[idx].unsqueeze(0).to(self.device)
+                target = train_targets[idx].unsqueeze(0).to(self.device)
                 
                 optimizer.zero_grad()
-                pred = model(seq)
-                loss = criterion(pred, target)
+                
+                # Forward pass (remove sigmoid since we use BCEWithLogitsLoss)
+                output = model.conv1(seq[:, -1])
+                output = F.relu(model.bn1(output))
+                output = model.dropout(output)
+                output = F.relu(model.bn2(model.conv2(output)))
+                output = model.dropout(output)
+                output = F.relu(model.bn3(model.conv3(output)))
+                logits = model.conv4(output).squeeze(1)  # Raw logits
+                
+                loss = criterion(logits, target)
                 loss.backward()
                 optimizer.step()
                 
                 total_loss += loss.item()
+                n_processed += 1
             
-            if epoch % 2 == 0:
-                print(f"    Epoch {epoch+1}/5, Loss: {total_loss/n_batches:.4f}")
+            if epoch % 3 == 0:
+                avg_loss = total_loss / max(n_processed, 1)
+                print(f"    Epoch {epoch+1}/10, Avg Loss: {avg_loss:.4f}")
         
         # Predict
         model.eval()
         with torch.no_grad():
             test_input = test_sequence.unsqueeze(0).to(self.device)
-            pred = model(test_input)
+            pred = model(test_input)  # This will apply sigmoid
             return pred.cpu().numpy().squeeze()
 
 def analyze_fire_no_fire_distribution(test_targets):
@@ -286,35 +391,53 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
     # Load first 5 days as training data
     for day in range(5):
         try:
-            seq, _, gt, _ = load_fire_event_data(fire_event_path, config, start_day=day)
+            result = load_fire_event_data(fire_event_path, config, start_day=day)
+            if len(result) == 5:  # Handle 5 return values
+                seq, _, gt, _, _ = result
+            else:  # Handle 4 return values
+                seq, _, gt, _ = result
             if len(gt) > 0:
                 all_sequences.append(seq)
                 all_targets.append(torch.tensor(gt[0], dtype=torch.float32))
-        except:
+        except Exception as e:
+            print(f"Error loading training day {day}: {e}")
             break
     
     # Load multiple test days (6-15) for fair evaluation
     print("Loading multiple test days for comprehensive evaluation...")
     for day in range(6, 16):  # Use days 6-15 as test (10 days)
         try:
-            seq, _, gt, _ = load_fire_event_data(fire_event_path, config, start_day=day)
+            result = load_fire_event_data(fire_event_path, config, start_day=day)
+            if len(result) == 5:  # Handle 5 return values
+                seq, _, gt, _, _ = result
+            else:  # Handle 4 return values
+                seq, _, gt, _ = result
             if len(gt) > 0:
                 test_sequences.append(seq)
                 test_targets.append(torch.tensor(gt[0], dtype=torch.float32))
-        except:
+        except Exception as e:
+            print(f"Error loading test day {day}: {e}")
             break
     
     if len(test_sequences) == 0:
         print("No valid test sequences found, using single day")
-        test_seq, _, test_gt, _ = load_fire_event_data(fire_event_path, config, start_day=6)
-        if test_seq is not None:
-            test_sequences = [test_seq]
-            if len(test_gt) > 0:
-                test_targets = [torch.tensor(test_gt[0], dtype=torch.float32)]
+        try:
+            result = load_fire_event_data(fire_event_path, config, start_day=6)
+            if len(result) == 5:  # Handle 5 return values
+                test_seq, _, test_gt, _, _ = result
+            else:  # Handle 4 return values
+                test_seq, _, test_gt, _ = result
+            if test_seq is not None:
+                test_sequences = [test_seq]
+                if len(test_gt) > 0:
+                    test_targets = [torch.tensor(test_gt[0], dtype=torch.float32)]
+                else:
+                    test_targets = [torch.zeros(config.SPATIAL_SIZE)]
             else:
-                test_targets = [torch.zeros(config.SPATIAL_SIZE)]
-        else:
-            print("Failed to load any test data")
+                print("Failed to load any test data")
+                return
+        except Exception as e:
+            print(f"Failed to load single test day: {e}")
             return
     
     print(f"Training data: {len(all_sequences)} sequences")
@@ -351,36 +474,36 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
     }
     print(f"  ✓ Time: {persistence_time:.4f}s")
     
-    # 2. Mean Baseline
-    print("\n2. MEAN BASELINE")
+    # 2. Enhanced Linear Model
+    print("\n2. ENHANCED LINEAR MODEL")
     start_time = time.time()
     try:
         # Predict on all test days
-        all_mean_preds = []
+        all_linear_preds = []
         for test_seq in test_sequences:
-            pred = baselines.mean_baseline(all_sequences, all_targets, test_seq)
-            all_mean_preds.append(pred)
+            pred = baselines.linear_regression_model(all_sequences, all_targets, test_seq)
+            all_linear_preds.append(pred)
         
-        mean_time = time.time() - start_time
+        linear_time = time.time() - start_time
         
         # Calculate AP with detailed analysis
-        mean_ap, mean_analysis = calculate_fair_ap_with_analysis(
-            all_mean_preds, test_targets, "Mean Baseline"
+        linear_ap, linear_analysis = calculate_fair_ap_with_analysis(
+            all_linear_preds, test_targets, "Enhanced Linear"
         )
             
-        results['Mean'] = {
-            'predictions': all_mean_preds,
-            'ap_score': mean_ap,
-            'time': mean_time,
-            'analysis': mean_analysis
+        results['Enhanced Linear'] = {
+            'predictions': all_linear_preds,
+            'ap_score': linear_ap,
+            'time': linear_time,
+            'analysis': linear_analysis
         }
-        print(f"  ✓ Time: {mean_time:.4f}s")
+        print(f"  ✓ Time: {linear_time:.4f}s")
     except Exception as e:
-        print(f"  ✗ Mean baseline failed: {e}")
-        results['Mean'] = None
+        print(f"  ✗ Enhanced Linear failed: {e}")
+        results['Enhanced Linear'] = None
     
-    # 3. Simple CNN
-    print("\n3. SIMPLE CNN")
+    # 3. Enhanced Simple CNN
+    print("\n3. ENHANCED SIMPLE CNN")
     start_time = time.time()
     try:
         # Predict on all test days
@@ -393,10 +516,10 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
         
         # Calculate AP with detailed analysis
         cnn_ap, cnn_analysis = calculate_fair_ap_with_analysis(
-            all_cnn_preds, test_targets, "Simple CNN"
+            all_cnn_preds, test_targets, "Enhanced CNN"
         )
             
-        results['SimpleCNN'] = {
+        results['Enhanced CNN'] = {
             'predictions': all_cnn_preds,
             'ap_score': cnn_ap,
             'time': cnn_time,
@@ -404,8 +527,8 @@ def run_baseline_comparison(fire_event_path="data/processed/2020/fire_24461899.h
         }
         print(f"  ✓ Time: {cnn_time:.2f}s")
     except Exception as e:
-        print(f"  ✗ Simple CNN failed: {e}")
-        results['SimpleCNN'] = None
+        print(f"  ✗ Enhanced CNN failed: {e}")
+        results['Enhanced CNN'] = None
     
     # Test main UNet model for comparison
     print("\n4. MAIN UNET MODEL")
